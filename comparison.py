@@ -28,6 +28,10 @@ print('\n\nBeginning Cassandra Test')
 from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 
+# Constants
+cass_select_query_prefix = 'SELECT * FROM "udr" LIMIT '
+UDR_cass_df = pd.DataFrame()
+cass_page_size = 5000
 def pandas_factory(colnames, rows):
     return pd.DataFrame(rows, columns=colnames)
 
@@ -36,11 +40,7 @@ authentication = PlainTextAuthProvider(username='devadmin', password='Keys2TheK1
 cluster = Cluster(['dev-cassandra.ksg.int'], port=9042, auth_provider=authentication)
 session = cluster.connect('CassandraPractice')
 session.row_factory = pandas_factory
-session.default_fetch_size = 5000
-
-# Constants
-cass_select_query_prefix = 'SELECT * FROM "udr" LIMIT '
-UDR_cass_df = pd.DataFrame()
+session.default_fetch_size = cass_page_size
 
 # Time the retrieval of various number of records
 for i in num_rows_list:
@@ -67,7 +67,9 @@ for i in num_rows_list:
         parse_time = parse_time + end_time - mid_time
 
     print( )
+    print(UDR_cass_df)
     print("Results for " + str(i) + " records:")
+    print("Actual rows fetched: " + str(UDR_cass_df.size))
     print("Time to execute select: " + str(query_time) + " seconds")
     print("Time to put into dataframe: " + str(parse_time) + " seconds")
     print("Total time: " + str(query_time + parse_time) + " seconds")
