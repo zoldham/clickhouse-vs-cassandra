@@ -56,7 +56,7 @@ consumer = KafkaConsumer(KAFKA_TOPIC, bootstrap_servers=KAFKA_BROKERS,
 kafka_array = []
 counter = 1
 loop_counter = 1
-write_to_db = 1
+write_to_db = 0
 kafka_df = pd.DataFrame()
 mod_factor = 10
 m = hashlib.md5()
@@ -71,7 +71,8 @@ try:
                 else:
                         kafka_df.append(pd.DataFrame({'Message' : jsonrow },index=np.arange(1)))
                 if (counter % mod_factor) == 0:
-                        #print(kafka_df)
+                        print('Prnting Dataframe')
+                        print(kafka_df)
                         if write_to_db == 0:
                                 sys.exit()
                         if write_to_db == 1:
