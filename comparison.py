@@ -7,13 +7,21 @@ import csv
 from pandas.io.json import json_normalize
 import time
 
+# Global vars
 num_rows_list = [5000, 10000, 100000, 500000, 1000000]
 num_cols = 42
+output_file = "output.txt"
+file = open(output_file, "w")
+
+# Global functions
+def do_logging(line):
+    print(line)
+    file.write(line + "\n")
 
 
 
 # Clickhouse specific code
-print('Beginning Clickhouse Test')
+do_logging('Beginning Clickhouse Test')
 from clickhouse_driver import Client
 
 # Variables/constants
@@ -65,8 +73,8 @@ clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'partitionhas
 clkhs_UDR_df = pd.DataFrame()
 
 # clkhs setup
-clk_settings = {'max_threads': 8, 'max_block_size': 200000}
-client = Client(host='192.168.5.60', port='', settings=clk_settings, connect_timeout=60, send_receive_timeout=900, sync_request_timeout=120)
+clk_settings = {'max_threads': 8, 'max_block_size': 5000}
+client = Client(host='192.168.5.60', port='8123', settings=clk_settings, connect_timeout=60, send_receive_timeout=900, sync_request_timeout=120)
 
 # Time the retrieval of various number of records
 for i in num_rows_list:
@@ -101,17 +109,17 @@ for i in num_rows_list:
 
     parse_time = parse_time + end_time - mid_time
 
-    print( )
-    print("Results for " + str(i) + " records:")
-    print("Actual rows fetched: " + str(clkhs_UDR_df.size / num_cols))
-    print("Time to execute select: " + str(query_time) + " seconds")
-    print("Time to put into dataframe: " + str(parse_time) + " seconds")
-    print("Total time: " + str(query_time + parse_time) + " seconds")
+    do_logging("")
+    do_logging("Results for " + str(i) + " records:")
+    do_logging("Actual rows fetched: " + str(clkhs_UDR_df.size / num_cols))
+    do_logging("Time to execute select: " + str(query_time) + " seconds")
+    do_logging("Time to put into dataframe: " + str(parse_time) + " seconds")
+    do_logging("Total time: " + str(query_time + parse_time) + " seconds")
 
 
 
 # Cassandra specific code
-print('\n\nBeginning Cassandra Test')
+do_logging('\n\nBeginning Cassandra Test')
 from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 
@@ -160,10 +168,14 @@ for i in num_rows_list:
 
     parse_time = parse_time + end_time - mid_time
 
-    print( )
-    print("Results for " + str(i) + " records:")
-    print("Actual rows fetched: " + str(cass_UDR_df.size / num_cols))
-    print("Time to execute select: " + str(query_time) + " seconds")
-    print("Time to put into dataframe: " + str(parse_time) + " seconds")
-    print("Total time: " + str(query_time + parse_time) + " seconds")
+    do_logging("")
+    do_logging("Results for " + str(i) + " records:")
+    do_logging("Actual rows fetched: " + str(cass_UDR_df.size / num_cols))
+    do_logging("Time to execute select: " + str(query_time) + " seconds")
+    do_logging("Time to put into dataframe: " + str(parse_time) + " seconds")
+    do_logging("Total time: " + str(query_time + parse_time) + " seconds")
 
+
+
+# Cleanup
+file.close()

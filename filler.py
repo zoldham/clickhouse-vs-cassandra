@@ -14,7 +14,7 @@ print('Beginning Clickhouse Test')
 
 # Setup
 from clickhouse_driver import Client
-clk_settings = {'max_threads': 8, 'max_block_size': 200000}
+clk_settings = {'max_threads': 8, 'max_block_size': 5000}
 client = Client(host='192.168.5.60', port='', settings=clk_settings, connect_timeout=60, send_receive_timeout=900, sync_request_timeout=120)
 create_table_query = ("CREATE TABLE radius.udr ( " +
     "CreateDate DateTime default now(), " +

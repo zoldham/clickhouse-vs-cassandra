@@ -1,0 +1,33 @@
+
+
+Beginning Cassandra Test
+
+Results for 5000 records:
+Actual rows fetched: 5000.0
+Time to execute select: 1.6567250000007334 seconds
+Time to put into dataframe: 0.06122299999697134 seconds
+Total time: 1.7179479999977048 seconds
+
+Results for 10000 records:
+Actual rows fetched: 10000.0
+Time to execute select: 2.7205829999984417 seconds
+Time to put into dataframe: 0.12155200000051991 seconds
+Total time: 2.8421349999989616 seconds
+
+Results for 100000 records:
+Actual rows fetched: 100000.0
+Time to execute select: 18.883078999995632 seconds
+Time to put into dataframe: 1.3260139999947569 seconds
+Total time: 20.20909299999039 seconds
+
+Results for 500000 records:
+Actual rows fetched: 500000.0
+Time to execute select: 94.5953749999826 seconds
+Time to put into dataframe: 7.593547000004037 seconds
+Total time: 102.18892199998663 seconds
+
+Results for 1000000 records:
+Actual rows fetched: 1000000.0
+Time to execute select: 185.57947800003967 seconds
+Time to put into dataframe: 14.670309999972233 seconds
+Total time: 200.2497880000119 seconds
