@@ -72,18 +72,28 @@ client = Client(host='192.168.5.60', port='', settings=clk_settings, connect_tim
 for i in num_rows_list:
     query_time = 0.0
     parse_time = 0.0
+    settings = {'max_block_size': 5000}
 
     start_time = time.perf_counter()
-    result = client.execute(clkhs_select_query_prefix + str(i) + ';')
+    result = client.execute_iter(clkhs_select_query_prefix + str(i) + ';', settings)
+    clkhs_UDR_list_temp = result.next()
     mid_time = time.perf_counter()
     clkhs_UDR_list = []
-    clkhs_UDR_list.extend(result.get_result())
+    clkhs_UDR_list.extend(clkhs_UDR_list_temp)
     end_time = time.perf_counter()
 
     query_time = query_time + mid_time - start_time
     parse_time = parse_time + end_time - mid_time
 
-    # TODO: Potentially need to iterate
+    while (len(clkhs_UDR_list_temp) > 0):
+        start_time = time.perf_counter()
+        clkhs_UDR_list_temp = result.next()
+        mid_time = time.perf_counter()
+        clkhs_UDR_list.extend(clkhs_UDR_list_temp)
+        end_time = time.perf_counter()
+
+        query_time = query_time + mid_time - start_time
+        parse_time = parse_time + end_time - mid_time
 
     mid_time = time.perf_counter()
     clkhs_UDR_df = pd.DataFrame(clkhs_UDR_list)
