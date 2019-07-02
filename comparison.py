@@ -8,6 +8,7 @@ from pandas.io.json import json_normalize
 import time
 
 num_rows_list = [5000, 10000, 100000, 500000, 1000000]
+num_cols = 42
 
 
 # Clickhouse specific code
@@ -50,7 +51,8 @@ for i in num_rows_list:
     start_time = time.perf_counter()
     rows = session.execute(cass_select_query_prefix + str(i) + ';', timeout=None)
     mid_time = time.perf_counter()
-    UDR_cass_df = rows._current_rows
+    UDR_cass_list = []
+    UDR_cass_list.extend(rows._current_rows.values.tolist())
     end_time = time.perf_counter()
 
     query_time = query_time + mid_time - start_time
@@ -60,16 +62,21 @@ for i in num_rows_list:
         start_time = time.perf_counter()
         rows.fetch_next_page()
         mid_time = time.perf_counter()
-        UDR_cass_df = UDR_cass_df.append(rows._current_rows)
+        UDR_cass_list.extend(rows._current_rows.values.tolist())
         end_time = time.perf_counter()
 
         query_time = query_time + mid_time - start_time
         parse_time = parse_time + end_time - mid_time
 
+    mid_time = time.perf_counter()
+    UDR_cass_df = pd.DataFrame(UDR_cass_list)
+    end_time = time.perf_counter() 
+
+    parse_time = parse_time + end_time - mid_time
+
     print( )
-    print(UDR_cass_df)
     print("Results for " + str(i) + " records:")
-    print("Actual rows fetched: " + str(UDR_cass_df.size))
+    print("Actual rows fetched: " + str(UDR_cass_df.size / num_cols))
     print("Time to execute select: " + str(query_time) + " seconds")
     print("Time to put into dataframe: " + str(parse_time) + " seconds")
     print("Total time: " + str(query_time + parse_time) + " seconds")
