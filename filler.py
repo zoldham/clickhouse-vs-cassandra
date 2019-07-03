@@ -23,101 +23,99 @@ create_table_query = ("CREATE TABLE radius.udr ( " +
 insert_query = "INSERT INTO radius.udr(Message) Format VALUES "
 
 # Create table
-print('start')
-client.execute_with_progress('SHOW TABLES;')
 client.execute(create_table_query)
-print('created')
-sys.exit()
 
-def insert_rows(df):
-    client.execute(insert_query, df.to_dict('r'))
+def insert_rows(clkhs_list):
+    print('Adding messages')
+    UDR_clkhs_df = pd.DataFrame(clkhs_list, columns = ['Message'])
+    client.execute(insert_query, UDR_clkhs_df.to_dict('r'))
 
 UDR_data_df = pd.read_csv('backup.csv')
-UDR_clkhs_df = pd.DataFrame()
+UDR_clkhs_list = []
 index = 0
 for row in UDR_data_df.itertuples(name=None):
     rowdict = {
-        'partitionhash': row[1],
-        'hashcode': row[2],
-        'accountnumber': row[3],
-        'airtimeclass': row[4],
-        'airtimeunits': row[5],
-        'allocationcompletedate': row[6],
-        'apn': row[7],
-        'callednumber': row[8],
-        'callingnumber': row[9],
-        'carrierid': row[10],
-        'cellid': row[11],
-        'chargingid': row[12],
-        'costcenterid': row[13],
-        'downlinkvol': row[14],
-        'duration': row[15],
-        'exactusagedateonly': row[16],
-        'exactusagetime': row[17],
-        'fileid': row[18],
-        'iccid': row[19],
-        'imei': row[20],
-        'imsi': row[21],
-        'lineid': row[22],
-        'linenumber': row[23],
-        'mobilecountrycode': row[24],
-        'mobilenetworkcode': row[25],
-        'mobileoriginated': row[26],
-        'msisdn': row[27],
-        'network': row[28],
-        'orgid': row[29],
-        'orgurn': row[30],
-        'plmn': row[31],
-        'propertybag': row[32],
-        'recordtype': row[33],
-        'roamingindicator': row[34],
-        'roundingdate': row[35],
-        'sender': row[36],
-        'subscriptionid': row[37],
-        'subscriptionurn': row[38],
-        'surrecordtypeid': row[39],
-        'tapcode': row[40],
-        'uplinkvol': row[41],
-        'usagetypeid': row[42]
+        "partitionhash":int(row[1]),
+        "hashcode":str(row[2]),
+        "accountnumber":str(row[3]),
+        "airtimeclass":int(row[4]),
+        "airtimeunits":float(row[5]),
+        "allocationcompletedate":str(row[6]),
+        "apn":str(row[7]),
+        "callednumber":str(row[8]),
+        "callingnumber":str(row[9]),
+        "carrierid":int(row[10]),
+        "cellid":str(row[11]),
+        "chargingid":str(row[12]),
+        "costcenterid":int(row[13]),
+        "downlinkvol":int(row[14]),
+        "duration":float(row[15]),
+        "exactusagedateonly":str(row[16]),
+        "exactusagetime":str(row[17]),
+        "fileid":int(row[18]),
+        "iccid":str(row[19]),
+        "imei":str(row[20]),
+        "imsi":str(row[21]),
+        "lineid":int(row[22]),
+        "linenumber":int(row[23]),
+        "mobilecountrycode":str(row[24]),
+        "mobilenetworkcode":str(row[25]),
+        "mobileoriginated":bool(row[26]),
+        "msisdn":str(row[27]),
+        "network":str(row[28]),
+        "orgid":int(row[29]),
+        "orgurn":str(row[30]),
+        "plmn":str(row[31]),
+        "propertybag":str(row[32]),
+        "recordtype":str(row[33]),
+        "roamingindicator":str(row[34]),
+        "roundingdate":str(row[35]),
+        "sender":str(row[36]),
+        "subscriptionid":int(row[37]),
+        "subscriptionurn":str(row[38]),
+        "surrecordtypeid":int(row[39]),
+        "tapcode":str(row[40]),
+        "uplinkvol":int(row[41]),
+        "usagetypeid":int(row[42])
     }
-    row_json = json.dumps(rowdict)
-
-    UDR_clkhs_df = UDR_clkhs_df.append(pd.DataFrame({'Message' : row_json}, index=np.arange(1)))
+    row_json = json.dumps(rowdict).replace(' ', '').replace('":NaN,"', '":null,"').replace('":"nan","', '":null,"')
+    UDR_clkhs_list.append(row_json)
     index = index + 1
 
-    if (index % 1000 == 0):
+    if (index % 100000 == 0):
+        print(row_json)
         index = 0
-        insert_rows(UDR_clkhs_df)
-        UDR_clkhs_df = pd.DataFrame()
+        insert_rows(UDR_clkhs_list)
+        UDR_clkhs_list = []
 
-insert_rows(UDR_clkhs_df)
+insert_rows(UDR_clkhs_list)
 
 
 
-# # Cassandra specific code
-# print('Beginning Cassandra Test')
-# from cassandra.cluster import Cluster
-# from cassandra.auth import PlainTextAuthProvider
+# Cassandra specific code
+print('Beginning Cassandra Test')
+from cassandra.cluster import Cluster
+from cassandra.auth import PlainTextAuthProvider
 
-# def pandas_factory(colnames, rows):
-#     return pd.DataFrame(rows, columns=colnames)
+def pandas_factory(colnames, rows):
+    return pd.DataFrame(rows, columns=colnames)
 
-# # cassandra setup
-# authentication = PlainTextAuthProvider(username='devadmin', password='Keys2TheK1ngd0m')
-# cluster = Cluster(['dev-cassandra.ksg.int'], port=9042, auth_provider=authentication)
-# session = cluster.connect('cmp_dev_ripple')
-# session.row_factory = pandas_factory
-# session.default_fetch_size = None
+# cassandra setup
+authentication = PlainTextAuthProvider(username='devadmin', password='Keys2TheK1ngd0m')
+cluster = Cluster(['dev-cassandra.ksg.int'], port=9042, auth_provider=authentication)
+session = cluster.connect('cmp_dev_ripple')
+session.row_factory = pandas_factory
+session.default_fetch_size = None
 
-# # queries
-# cass_select_query = 'COPY "udr_loadtest" TO \'backup.csv\''
-# cass_insert_query = 'COPY "udr" FROM \'backup.csv\''
+# queries
+cass_select_query = 'COPY "udr_loadtest" TO \'backup.csv\''
+cass_insert_query = 'COPY "udr" FROM \'backup.csv\''
 
-# # execution
-# rows = session.execute(cass_select_query)
-# session.set_keyspace('CassandraPractice')
-# session.execute(cass_insert_query)
+# execution
+rows = session.execute(cass_select_query)
+session.set_keyspace('CassandraPractice')
+session.execute(cass_insert_query)
 
-# UDR_cass_df = rows._current_rows
-# print(UDR_cass_df)
+UDR_cass_df = rows._current_rows
+print(UDR_cass_df)
 
