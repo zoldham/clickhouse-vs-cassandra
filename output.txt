@@ -1,0 +1,1308 @@
+Systems Information:
+
+Clickhouse Instance: 192.168.5.60:9000
+
+Cassandra Instance: dev-cassandra.ksg.int:9042
+
+Clickhouse Table Definition:
+CREATE TABLE radius.udr ( 
+   CreateDate DateTime default now(), 
+   Message String 
+) ENGINE = MergeTree() 
+PARTITION BY toYYYYMM(CreateDate) 
+ORDER BY tuple()
+
+Cassandra Table Definition:
+CREATE TABLE "CassandraPractice".udr_copy1 (
+	partitionhash int,
+	hashcode text,
+	accountnumber text,
+	airtimeclass int,
+	airtimeunits double,
+	allocationcompletedate text,
+	apn text,
+	callednumber text,
+	callingnumber text,
+	carrierid int,
+	cellid text,
+	chargingid text,
+	costcenterid int,
+	downlinkvol bigint,
+	duration double,
+	exactusagedateonly date,
+	exactusagetime text,
+	fileid int,
+	iccid text,
+	imei text,
+	imsi text,
+	lineid bigint,
+	linenumber int,
+	mobilecountrycode text,
+	mobilenetworkcode text,
+	mobileoriginated boolean,
+	msisdn text,
+	network text,
+	orgid int,
+	orgurn text,
+	plmn text,
+	propertybag MAP<text, text>,
+	recordtype text,
+	roamingindicator text,
+	roundingdate text,
+	sender text,
+	subscriptionid int,
+	subscriptionurn text,
+	surrecordtypeid int,
+	tapcode text,
+	uplinkvol bigint,
+	usagetypeid int,
+	PRIMARY KEY (partitionhash, hashcode)
+) WITH bloom_filter_fp_chance = 0.01
+AND comment = ''
+AND crc_check_chance = 1.0
+AND dclocal_read_repair_chance = 0.1
+AND default_time_to_live = 0
+AND gc_grace_seconds = 864000
+AND max_index_interval = 2048
+AND memtable_flush_period_in_ms = 0
+AND min_index_interval = 128
+AND read_repair_chance = 0.0
+AND speculative_retry = '99.0PERCENTILE'
+AND caching = {
+	'keys' : 'NONE',
+	'rows_per_partition' : 'NONE'
+}
+AND compression = {
+	'chunk_length_in_kb' : 64,
+	'class' : 'LZ4Compressor',
+	'enabled' : true
+}
+AND compaction = {
+	'class' : 'SizeTieredCompactionStrategy',
+	'max_threshold' : 32,
+	'min_threshold' : 4
+};
+
+
+Beginning Clickhouse Test
+Thread 140175306983168 starting
+Thread 140175306983168 starting background query: select protocolname,ipv4_src_addr,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by protocolname,ipv4_src_addr order by connections desc limit 50
+Thread 140175348991744 starting
+Thread 140175348991744 starting background query: select in_bytes,ipv4_next_hop,last_switched,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by in_bytes,ipv4_next_hop,last_switched order by connections desc limit 50
+Thread 140175357445888 starting
+Thread 140175357445888 starting background query: select in_dst_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by in_dst_mac order by connections desc limit 50
+Thread 140174978451200 starting
+Thread 140174978451200 starting background query: select direction,forwarding_statusstatus,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by direction,forwarding_statusstatus,icmp_type order by connections desc limit 50
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+LIMIT 
+Iteration 0: 0.08
+Iteration 1: 0.06
+Iteration 2: 0.06
+Iteration 3: 0.06
+Iteration 4: 0.04
+Iteration 5: 0.06
+Iteration 6: 0.06
+Iteration 7: 0.03
+Iteration 8: 0.04
+Iteration 9: 0.07
+Iteration 10: 0.04
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.05 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.05 seconds
+Iteration 0: 0.04
+Iteration 1: 0.06
+Iteration 2: 0.06
+Iteration 3: 0.06
+Iteration 4: 0.07
+Iteration 5: 0.06
+Iteration 6: 0.03
+Iteration 7: 0.04
+Iteration 8: 0.05
+Iteration 9: 0.06
+Iteration 10: 0.05
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.05 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.05 seconds
+Iteration 0: 0.04
+Iteration 1: 0.03
+Iteration 2: 0.04
+Iteration 3: 0.03
+Iteration 4: 0.05
+Iteration 5: 0.08
+Iteration 6: 0.06
+Iteration 7: 0.06
+Iteration 8: 0.07
+Iteration 9: 0.05
+Iteration 10: 0.04
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.04 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.05 seconds
+Iteration 0: 0.06
+Iteration 1: 0.06
+Iteration 2: 0.10
+Iteration 3: 0.07
+Iteration 4: 0.08
+Thread 140175348991744 encountered an exception:
+Iteration 5: 0.08
+Code: 241.
+DB::Exception: Memory limit (for query) exceeded: would use 9.31 GiB (attempt to allocate chunk of 1572864 bytes), maximum: 9.31 GiB. Stack trace:
+
+0. clickhouse-server(StackTrace::StackTrace()+0x16) [0x66bee66]
+1. clickhouse-server(MemoryTracker::alloc(long)+0x799) [0x66b7fc9]
+2. clickhouse-server(MemoryTracker::alloc(long)+0xa8) [0x66b78d8]
+3. clickhouse-server(Allocator<true>::realloc(void*, unsigned long, unsigned long, unsigned long)+0xb3) [0x66a26d3]
+4. clickhouse-server(HashTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true> >::resize(unsigned long, unsigned long)+0x74) [0x62790d4]
+5. clickhouse-server(void DB::Aggregator::executeImplCase<false, DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> > >(DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> >&, DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> >::State&, DB::Arena*, unsigned long, std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >&, DB::Aggregator::AggregateFunctionInstruction*, std::vector<StringRef, std::allocator<StringRef> >&, char*) const+0x33c) [0x627a59c]
+6. clickhouse-server(void DB::Aggregator::executeImpl<DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> > >(DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> >&, DB::Arena*, unsigned long, std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >&, DB::Aggregator::AggregateFunctionInstruction*, std::vector<StringRef, std::allocator<StringRef> >&, bool, char*) const+0x154) [0x627a804]
+7. clickhouse-server(DB::Aggregator::executeOnBlock(DB::Block const&, DB::AggregatedDataVariants&, std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >&, std::vector<std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >, std::allocator<std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> > > >&, std::vector<StringRef, std::allocator<StringRef> >&, bool&)+0x18d7) [0x62264f7]
+8. clickhouse-server(DB::ParallelInputsProcessor<DB::ParallelAggregatingBlockInputStream::Handler>::thread(std::shared_ptr<DB::ThreadGroupStatus>, unsigned long)+0x3ba) [0x61da43a]
+9. clickhouse-server(_ZZN20ThreadFromGlobalPoolC4IZN2DB23ParallelInputsProcessorINS1_35ParallelAggregatingBlockInputStream7HandlerEE7processEvEUlvE_JEEEOT_DpOT0_ENKUlvE_clEv+0x5d) [0x61dab7d]
+10. clickhouse-server(ThreadPoolImpl<std::thread>::worker(std::_List_iterator<std::thread>)+0x187) [0x66c4bb7]
+11. clickhouse-server() [0x71eee5f]
+12. /lib64/libpthread.so.0(+0x7dd5) [0x7fb94d2c1dd5]
+13. /lib64/libc.so.6(clone+0x6d) [0x7fb94c5c3ead]
+
+Iteration 6: 0.10
+Iteration 7: 0.10
+Iteration 8: 0.07
+Iteration 9: 0.07
+Iteration 10: 0.12
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.07 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.08 seconds
+Iteration 0: 0.09
+Iteration 1: 0.10
+Iteration 2: 0.08
+Iteration 3: 0.09
+Iteration 4: 0.07
+Iteration 5: 0.14
+Iteration 6: 0.13
+Iteration 7: 0.11
+Iteration 8: 0.10
+Iteration 9: 0.11
+Iteration 10: 0.11
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.09 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.10 seconds
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+WHERE partitionhash = -1 
+LIMIT 
+Iteration 0: 1.28
+Iteration 1: 1.43
+Continuing after exception
+Thread 140175348991744 starting background query: select flowset_id,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by flowset_id order by connections desc limit 50
+Iteration 2: 1.57
+Iteration 3: 1.59
+Iteration 4: 1.56
+Iteration 5: 1.59
+Iteration 6: 1.69
+Iteration 7: 1.50
+Iteration 8: 1.61
+Iteration 9: 1.54
+Iteration 10: 1.63
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 0
+Time to execute select: 1.54 seconds
+Time to put into dataframe: 0.00 seconds
+Total time: 1.55 seconds
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+WHERE carrierid = 18000 
+LIMIT 
+Iteration 0: 0.13
+Iteration 1: 0.12
+Iteration 2: 0.11
+Iteration 3: 0.11
+Iteration 4: 0.11
+Iteration 5: 0.07
+Iteration 6: 0.08
+Iteration 7: 0.09
+Iteration 8: 0.15
+Iteration 9: 0.20
+Iteration 10: 0.12
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.10 seconds
+Time to put into dataframe: 0.02 seconds
+Total time: 0.12 seconds
+Iteration 0: 0.12
+Iteration 1: 0.12
+Iteration 2: 0.08
+Iteration 3: 0.14
+Iteration 4: 0.13
+Iteration 5: 0.12
+Iteration 6: 0.19
+Iteration 7: 0.11
+Iteration 8: 0.07
+Iteration 9: 0.13
+Iteration 10: 0.08
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.11 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.12 seconds
+Iteration 0: 0.15
+Iteration 1: 0.07
+Iteration 2: 0.11
+Iteration 3: 0.08
+Iteration 4: 0.07
+Iteration 5: 0.10
+Iteration 6: 0.13
+Iteration 7: 0.11
+Iteration 8: 0.11
+Iteration 9: 0.27
+Iteration 10: 0.12
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.11 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.12 seconds
+Iteration 0: 0.10
+Iteration 1: 0.13
+Iteration 2: 0.08
+Iteration 3: 0.17
+Iteration 4: 0.18
+Iteration 5: 0.14
+Iteration 6: 0.11
+Iteration 7: 0.11
+Iteration 8: 0.09
+Iteration 9: 0.12
+Iteration 10: 0.11
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.12 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.12 seconds
+Iteration 0: 0.13
+Iteration 1: 0.19
+Iteration 2: 0.15
+Iteration 3: 0.17
+Iteration 4: 0.15
+Iteration 5: 0.11
+Iteration 6: 0.13
+Iteration 7: 0.14
+Iteration 8: 0.12
+Iteration 9: 0.13
+Iteration 10: 0.18
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.14 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.15 seconds
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+WHERE fileid = 278 
+LIMIT 
+Iteration 0: 0.22
+Iteration 1: 0.25
+Iteration 2: 0.17
+Iteration 3: 0.23
+Iteration 4: 0.18
+Iteration 5: 0.24
+Iteration 6: 0.18
+Iteration 7: 0.21
+Iteration 8: 0.21
+Iteration 9: 0.17
+Iteration 10: 0.21
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.19 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.21 seconds
+Iteration 0: 0.22
+Iteration 1: 0.24
+Iteration 2: 0.20
+Iteration 3: 0.21
+Iteration 4: 0.19
+Iteration 5: 0.20
+Iteration 6: 0.19
+Iteration 7: 0.18
+Iteration 8: 0.18
+Iteration 9: 0.18
+Iteration 10: 0.18
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.18 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.20 seconds
+Iteration 0: 0.23
+Thread 140175306983168 encountered an exception:
+Code: 241.
+DB::Exception: Memory limit (for query) exceeded: would use 9.31 GiB (attempt to allocate chunk of 65536 bytes), maximum: 9.31 GiB: (while reading column protocolname): (while reading from part /ClikHausData/data_root/data/netflow/netflow_raw/201812_4602466_4648029_9/ from mark 36165 with max_rows_to_read = 5000). Stack trace:
+
+0. clickhouse-server(StackTrace::StackTrace()+0x16) [0x66bee66]
+1. clickhouse-server(MemoryTracker::alloc(long)+0x799) [0x66b7fc9]
+2. clickhouse-server(MemoryTracker::alloc(long)+0xa8) [0x66b78d8]
+3. clickhouse-server(Allocator<false>::alloc(unsigned long, unsigned long)+0x22) [0x66a29b2]
+4. clickhouse-server(DB::DataTypeString::deserializeBinaryBulk(DB::IColumn&, DB::ReadBuffer&, unsigned long, double) const+0x2ed) [0x5cdfa9d]
+5. clickhouse-server(DB::MergeTreeReader::readData(std::string const&, DB::IDataType const&, DB::IColumn&, unsigned long, bool, unsigned long, bool)+0x2ea) [0x637406a]
+6. clickhouse-server(DB::MergeTreeReader::readRows(unsigned long, bool, unsigned long, DB::Block&)+0x2f3) [0x6374703]
+7. clickhouse-server(DB::MergeTreeRangeReader::DelayedStream::finalize(DB::Block&)+0x13e) [0x63702ee]
+8. clickhouse-server(DB::MergeTreeRangeReader::startReadingChain(unsigned long, std::vector<DB::MarkRange, std::allocator<DB::MarkRange> >&)+0x19f) [0x6370fff]
+9. clickhouse-server(DB::MergeTreeRangeReader::read(unsigned long, std::vector<DB::MarkRange, std::allocator<DB::MarkRange> >&)+0x622) [0x6372792]
+10. clickhouse-server(DB::MergeTreeBaseSelectBlockInputStream::readFromPart()+0x7d0) [0x6363c00]
+11. clickhouse-server(DB::MergeTreeBaseSelectBlockInputStream::readImpl()+0xa3) [0x6365113]
+12. clickhouse-server(DB::IBlockInputStream::read()+0x135) [0x5c44675]
+13. clickhouse-server(DB::ExpressionBlockInputStream::readImpl()+0x1a) [0x61ae2ba]
+14. clickhouse-server(DB::IBlockInputStream::read()+0x135) [0x5c44675]
+15. clickhouse-server(DB::ParallelInputsProcessor<DB::ParallelAggregatingBlockInputStream::Handler>::thread(std::shared_ptr<DB::ThreadGroupStatus>, unsigned long)+0x2b5) [0x61da335]
+16. clickhouse-server(_ZZN20ThreadFromGlobalPoolC4IZN2DB23ParallelInputsProcessorINS1_35ParallelAggregatingBlockInputStream7HandlerEE7processEvEUlvE_JEEEOT_DpOT0_ENKUlvE_clEv+0x5d) [0x61dab7d]
+17. clickhouse-server(ThreadPoolImpl<std::thread>::worker(std::_List_iterator<std::thread>)+0x187) [0x66c4bb7]
+18. clickhouse-server() [0x71eee5f]
+19. /lib64/libpthread.so.0(+0x7dd5) [0x7fb94d2c1dd5]
+20. /lib64/libc.so.6(clone+0x6d) [0x7fb94c5c3ead]
+
+Iteration 1: 0.18
+Iteration 2: 0.18
+Iteration 3: 0.20
+Iteration 4: 0.19
+Iteration 5: 0.15
+Iteration 6: 0.23
+Iteration 7: 0.21
+Iteration 8: 0.19
+Iteration 9: 0.13
+Iteration 10: 0.18
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.17 seconds
+Time to put into dataframe: 0.02 seconds
+Total time: 0.19 seconds
+Iteration 0: 0.20
+Iteration 1: 0.16
+Iteration 2: 0.18
+Iteration 3: 0.21
+Iteration 4: 0.20
+Iteration 5: 0.17
+Iteration 6: 0.15
+Iteration 7: 0.19
+Iteration 8: 0.15
+Iteration 9: 0.20
+Iteration 10: 0.17
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.17 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.18 seconds
+Iteration 0: 0.21
+Iteration 1: 0.18
+Iteration 2: 0.21
+Iteration 3: 0.20
+Iteration 4: 0.18
+Iteration 5: 0.16
+Continuing after exception
+Thread 140175306983168 starting background query: select out_src_mac,tcp_flags,out_src_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by out_src_mac,tcp_flags,out_src_mac order by connections desc limit 50
+Iteration 6: 0.15
+Iteration 7: 0.25
+Iteration 8: 0.24
+Iteration 9: 0.20
+Iteration 10: 0.15
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.19 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.20 seconds
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+WHERE usagetypeid = 0 
+LIMIT 
+Iteration 0: 0.19
+Iteration 1: 0.20
+Iteration 2: 0.21
+Iteration 3: 0.23
+Iteration 4: 0.17
+Iteration 5: 0.17
+Iteration 6: 0.20
+Iteration 7: 0.35
+Iteration 8: 0.31
+Iteration 9: 0.22
+Iteration 10: 0.23
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.21 seconds
+Time to put into dataframe: 0.02 seconds
+Total time: 0.23 seconds
+Iteration 0: 0.28
+Iteration 1: 0.29
+Iteration 2: 0.24
+Iteration 3: 0.19
+Iteration 4: 0.21
+Iteration 5: 0.21
+Iteration 6: 0.24
+Iteration 7: 0.22
+Iteration 8: 0.18
+Iteration 9: 0.19
+Iteration 10: 0.19
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.21 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.22 seconds
+Iteration 0: 0.20
+Iteration 1: 0.15
+Iteration 2: 0.24
+Iteration 3: 0.18
+Iteration 4: 0.16
+Iteration 5: 0.39
+Iteration 6: 0.15
+Iteration 7: 0.17
+Iteration 8: 0.31
+Iteration 9: 0.20
+Iteration 10: 0.24
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.20 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.22 seconds
+Iteration 0: 0.22
+Iteration 1: 0.21
+Iteration 2: 0.18
+Iteration 3: 0.41
+Iteration 4: 0.20
+Iteration 5: 0.19
+Iteration 6: 0.20
+Iteration 7: 0.21
+Iteration 8: 0.19
+Iteration 9: 0.25
+Iteration 10: 0.44
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.23 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.25 seconds
+Iteration 0: 0.19
+Iteration 1: 0.23
+Iteration 2: 0.18
+Iteration 3: 0.17
+Iteration 4: 0.20
+Iteration 5: 0.23
+Iteration 6: 0.25
+Iteration 7: 0.36
+Iteration 8: 0.20
+Iteration 9: 0.14
+Iteration 10: 0.18
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.20 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.21 seconds
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+WHERE partitionhash < 190512005 
+LIMIT 
+Iteration 0: 0.10
+Iteration 1: 0.09
+Iteration 2: 0.11
+Iteration 3: 0.08
+Iteration 4: 0.34
+Iteration 5: 0.14
+Iteration 6: 0.09
+Iteration 7: 0.10
+Iteration 8: 0.13
+Iteration 9: 0.15
+Iteration 10: 0.14
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.12 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.13 seconds
+Iteration 0: 0.12
+Iteration 1: 0.11
+Iteration 2: 0.09
+Iteration 3: 0.10
+Iteration 4: 0.11
+Iteration 5: 0.12
+Iteration 6: 0.12
+Iteration 7: 0.10
+Iteration 8: 0.12
+Iteration 9: 0.10
+Iteration 10: 0.13
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.09 seconds
+Time to put into dataframe: 0.02 seconds
+Total time: 0.11 seconds
+Iteration 0: 0.09
+Iteration 1: 0.11
+Iteration 2: 0.11
+Iteration 3: 0.12
+Iteration 4: 0.10
+Iteration 5: 0.10
+Iteration 6: 0.08
+Iteration 7: 0.09
+Iteration 8: 0.12
+Iteration 9: 0.10
+Iteration 10: 0.12
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.09 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.10 seconds
+Iteration 0: 0.15
+Iteration 1: 0.08
+Iteration 2: 0.10
+Iteration 3: 0.19
+Iteration 4: 0.10
+Iteration 5: 0.09
+Iteration 6: 0.08
+Iteration 7: 0.09
+Iteration 8: 0.09
+Iteration 9: 0.09
+Iteration 10: 0.10
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.10 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.11 seconds
+Iteration 0: 0.10
+Iteration 1: 0.11
+Iteration 2: 0.15
+Iteration 3: 0.13
+Iteration 4: 0.11
+Iteration 5: 0.12
+Iteration 6: 0.13
+Iteration 7: 0.12
+Iteration 8: 0.13
+Iteration 9: 0.11
+Iteration 10: 0.15
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.12 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.12 seconds
+
+Current Query: SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, 
+visitParamExtractString(Message, 'hashcode') AS hashcode, 
+visitParamExtractString(Message, 'accountnumber') AS accountnumber, 
+visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, 
+visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, 
+visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, 
+visitParamExtractString(Message, 'apn') AS apn, 
+visitParamExtractString(Message, 'callednumber') AS callednumber, 
+visitParamExtractString(Message, 'callingnumber') AS callingnumber, 
+visitParamExtractInt(Message, 'carrierid') AS carrierid, 
+visitParamExtractString(Message, 'cellid') AS cellid, 
+visitParamExtractString(Message, 'chargingid') AS chargingid, 
+visitParamExtractInt(Message, 'costcenterid') AS costcenterid, 
+visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, 
+visitParamExtractFloat(Message, 'duration') AS duration, 
+visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, 
+visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, 
+visitParamExtractInt(Message, 'fileid') AS fileid, 
+visitParamExtractString(Message, 'iccid') AS iccid, 
+visitParamExtractString(Message, 'imei') AS imei, 
+visitParamExtractString(Message, 'imsi') AS imsi, 
+visitParamExtractInt(Message, 'lineid') AS lineid, 
+visitParamExtractInt(Message, 'linenumber') AS linenumber, 
+visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, 
+visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, 
+visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, 
+visitParamExtractString(Message, 'msisdn') AS msisdn, 
+visitParamExtractString(Message, 'network') AS network, 
+visitParamExtractInt(Message, 'orgid') AS orgid, 
+visitParamExtractString(Message, 'orgurn') AS orgurn, 
+visitParamExtractString(Message, 'plmn') AS plmn, 
+visitParamExtractRaw(Message, 'propertybag') AS propertybag, 
+visitParamExtractString(Message, 'recordtype') AS recordtype, 
+visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, 
+visitParamExtractString(Message, 'roundingdate') AS roundingdate, 
+visitParamExtractString(Message, 'sender') AS sender, 
+visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, 
+visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, 
+visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, 
+visitParamExtractString(Message, 'tapcode') AS tapcode, 
+visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, 
+visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid 
+FROM radius.udr 
+WHERE subscriptionid < 11400 AND subscriptionid > 11360 
+LIMIT 
+Iteration 0: 0.13
+Iteration 1: 0.10
+Iteration 2: 0.11
+Iteration 3: 0.11
+Iteration 4: 0.07
+Iteration 5: 0.14
+Iteration 6: 0.10
+Iteration 7: 0.07
+Iteration 8: 0.10
+Iteration 9: 0.09
+Iteration 10: 0.12
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.09 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.10 seconds
+Iteration 0: 0.08
+Iteration 1: 0.12
+Iteration 2: 0.12
+Iteration 3: 0.11
+Thread 140175348991744 starting background query: select protocolname,ipv4_src_addr,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by protocolname,ipv4_src_addr order by connections desc limit 50
+Iteration 4: 0.14
+Iteration 5: 0.12
+Iteration 6: 0.09
+Iteration 7: 0.07
+Iteration 8: 0.08
+Iteration 9: 0.11
+Iteration 10: 0.15
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.10 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.11 seconds
+Iteration 0: 0.13
+Iteration 1: 0.07
+Iteration 2: 0.11
+Iteration 3: 0.10
+Iteration 4: 0.09
+Iteration 5: 0.16
+Iteration 6: 0.08
+Iteration 7: 0.12
+Iteration 8: 0.16
+Iteration 9: 0.14
+Iteration 10: 0.14
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.11 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.12 seconds
+Iteration 0: 0.08
+Iteration 1: 0.12
+Iteration 2: 0.15
+Iteration 3: 0.14
+Iteration 4: 0.12
+Iteration 5: 0.10
+Iteration 6: 0.09
+Iteration 7: 0.08
+Iteration 8: 0.11
+Iteration 9: 0.11
+Iteration 10: 0.09
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.10 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.11 seconds
+Iteration 0: 0.15
+Iteration 1: 0.12
+Iteration 2: 0.13
+Iteration 3: 0.11
+Iteration 4: 0.11
+Iteration 5: 0.11
+Iteration 6: 0.12
+Iteration 7: 0.15
+Iteration 8: 0.18
+Iteration 9: 0.20
+Iteration 10: 0.15
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.13 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.14 seconds
+Thread 140175348991744 encountered an exception:
+Code: 241.
+DB::Exception: Memory limit (for query) exceeded: would use 9.31 GiB (attempt to allocate chunk of 256 bytes), maximum: 9.31 GiB. Stack trace:
+
+0. clickhouse-server(StackTrace::StackTrace()+0x16) [0x66bee66]
+1. clickhouse-server(MemoryTracker::alloc(long)+0x799) [0x66b7fc9]
+2. clickhouse-server(MemoryTracker::alloc(long)+0xa8) [0x66b78d8]
+3. clickhouse-server(Allocator<false>::realloc(void*, unsigned long, unsigned long, unsigned long)+0xb3) [0x66a3043]
+4. clickhouse-server(ReservoirSampler<int, (ReservoirSamplerOnEmpty::Enum)1, std::less<int> >::insert(int const&)+0x145) [0x5944785]
+5. clickhouse-server(void DB::Aggregator::executeImplCase<false, DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> > >(DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> >&, DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> >::State&, DB::Arena*, unsigned long, std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >&, DB::Aggregator::AggregateFunctionInstruction*, std::vector<StringRef, std::allocator<StringRef> >&, char*) const+0x1d8) [0x627a438]
+6. clickhouse-server(void DB::Aggregator::executeImpl<DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> > >(DB::AggregationMethodSerialized<TwoLevelHashMapTable<StringRef, HashMapCellWithSavedHash<StringRef, char*, DefaultHash<StringRef>, HashTableNoState>, DefaultHash<StringRef>, TwoLevelHashTableGrower<8ul>, Allocator<true>, HashMapTable> >&, DB::Arena*, unsigned long, std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >&, DB::Aggregator::AggregateFunctionInstruction*, std::vector<StringRef, std::allocator<StringRef> >&, bool, char*) const+0x154) [0x627a804]
+7. clickhouse-server(DB::Aggregator::executeOnBlock(DB::Block const&, DB::AggregatedDataVariants&, std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >&, std::vector<std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> >, std::allocator<std::vector<DB::IColumn const*, std::allocator<DB::IColumn const*> > > >&, std::vector<StringRef, std::allocator<StringRef> >&, bool&)+0x18d7) [0x62264f7]
+8. clickhouse-server(DB::ParallelInputsProcessor<DB::ParallelAggregatingBlockInputStream::Handler>::thread(std::shared_ptr<DB::ThreadGroupStatus>, unsigned long)+0x3ba) [0x61da43a]
+9. clickhouse-server(_ZZN20ThreadFromGlobalPoolC4IZN2DB23ParallelInputsProcessorINS1_35ParallelAggregatingBlockInputStream7HandlerEE7processEvEUlvE_JEEEOT_DpOT0_ENKUlvE_clEv+0x5d) [0x61dab7d]
+10. clickhouse-server(ThreadPoolImpl<std::thread>::worker(std::_List_iterator<std::thread>)+0x187) [0x66c4bb7]
+11. clickhouse-server() [0x71eee5f]
+12. /lib64/libpthread.so.0(+0x7dd5) [0x7fb94d2c1dd5]
+13. /lib64/libc.so.6(clone+0x6d) [0x7fb94c5c3ead]
+
+Continuing after exception
+
+
+Beginning Cassandra Test
+
+Current Query: SELECT * FROM "udr" LIMIT 
+Iteration 0: 0.03
+Iteration 1: 0.02
+Iteration 2: 0.02
+Iteration 3: 0.02
+Iteration 4: 0.02
+Iteration 5: 0.02
+Iteration 6: 0.02
+Iteration 7: 0.02
+Iteration 8: 0.02
+Iteration 9: 0.02
+Iteration 10: 0.02
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.02 seconds
+Time to put into dataframe: 0.00 seconds
+Total time: 0.02 seconds
+Iteration 0: 0.05
+Iteration 1: 0.02
+Iteration 2: 0.03
+Iteration 3: 0.02
+Iteration 4: 0.02
+Iteration 5: 0.02
+Iteration 6: 0.03
+Iteration 7: 0.02
+Iteration 8: 0.02
+Iteration 9: 0.02
+Iteration 10: 0.02
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.02 seconds
+Time to put into dataframe: 0.00 seconds
+Total time: 0.02 seconds
+Iteration 0: 0.07
+Iteration 1: 0.07
+Iteration 2: 0.06
+Iteration 3: 0.07
+Iteration 4: 0.05
+Iteration 5: 0.09
+Iteration 6: 0.04
+Iteration 7: 0.04
+Iteration 8: 0.04
+Iteration 9: 0.04
+Iteration 10: 0.05
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.05 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.06 seconds
+Iteration 0: 0.22
+Iteration 1: 0.28
+Iteration 2: 0.24
+Iteration 3: 0.28
+Iteration 4: 0.21
+Iteration 5: 0.30
+Iteration 6: 0.15
+Iteration 7: 0.17
+Iteration 8: 0.21
+Iteration 9: 0.27
+Iteration 10: 0.18
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.22 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.23 seconds
+Iteration 0: 0.39
+Iteration 1: 0.35
+Iteration 2: 0.31
+Iteration 3: 0.34
+Iteration 4: 0.37
+Iteration 5: 0.34
+Iteration 6: 0.32
+Iteration 7: 0.44
+Iteration 8: 0.25
+Iteration 9: 0.33
+Iteration 10: 0.33
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.33 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.34 seconds
+
+Current Query: SELECT * FROM "udr" WHERE partitionhash = -1 LIMIT 
+Iteration 0: 0.04
+Iteration 1: 0.01
+Iteration 2: 0.01
+Iteration 3: 0.01
+Iteration 4: 0.01
+Iteration 5: 0.01
+Iteration 6: 0.01
+Iteration 7: 0.01
+Iteration 8: 0.01
+Iteration 9: 0.01
+Iteration 10: 0.01
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 0
+Time to execute select: 0.01 seconds
+Time to put into dataframe: 0.00 seconds
+Total time: 0.01 seconds
+
+Current Query: SELECT * FROM "udr" WHERE carrierid = 18000 LIMIT 
+Iteration 0: 0.22
+Iteration 1: 0.35
+Iteration 2: 0.61
+Iteration 3: 0.77
+Iteration 4: 0.54
+Iteration 5: 0.52
+Iteration 6: 0.58
+Iteration 7: 0.59
+Iteration 8: 0.66
+Iteration 9: 0.61
+Iteration 10: 0.84
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.57 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.57 seconds
+Iteration 0: 0.18
+Iteration 1: 0.53
+Iteration 2: 0.65
+Iteration 3: 0.64
+Iteration 4: 0.58
+Iteration 5: 0.57
+Iteration 6: 0.72
+Iteration 7: 0.72
+Iteration 8: 0.79
+Iteration 9: 0.66
+Iteration 10: 0.52
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.59 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.60 seconds
+Iteration 0: 0.16
+Iteration 1: 0.57
+Iteration 2: 0.84
+Iteration 3: 0.37
+Iteration 4: 0.69
+Iteration 5: 0.75
+Iteration 6: 0.62
+Iteration 7: 0.49
+Iteration 8: 0.70
+Iteration 9: 0.65
+Iteration 10: 0.60
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.58 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.58 seconds
+Iteration 0: 0.53
+Iteration 1: 0.55
+Iteration 2: 1.04
+Iteration 3: 0.52
+Iteration 4: 0.77
+Iteration 5: 0.80
+Iteration 6: 0.98
+Iteration 7: 0.61
+Iteration 8: 0.94
+Iteration 9: 0.75
+Iteration 10: 0.68
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 0.74 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.74 seconds
+Iteration 0: 0.78
+Iteration 1: 1.07
+Iteration 2: 0.77
+Iteration 3: 0.87
+Iteration 4: 0.58
+Iteration 5: 1.03
+Iteration 6: 0.64
+Iteration 7: 0.79
+Iteration 8: 0.57
+Iteration 9: 1.01
+Iteration 10: 0.65
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 0.79 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.80 seconds
+
+Current Query: SELECT * FROM "udr" WHERE fileid = 278 LIMIT 
+Coordinator Node Timeout
+
+Current Query: SELECT * FROM "udr" WHERE usagetypeid = 0 LIMIT 
+Exception while connecting to cassandra: 
+__init__() got an unexpected keyword argument 'host'
+retrying connection:
+Coordinator Node Timeout
+
+Current Query: SELECT * FROM "udr" WHERE partitionhash < 190512005 LIMIT 
+Iteration 0: 8.53
+Iteration 1: 0.61
+Iteration 2: 0.62
+Iteration 3: 0.10
+Iteration 4: 0.19
+Iteration 5: 0.08
+Iteration 6: 0.11
+Iteration 7: 0.06
+Iteration 8: 0.33
+Iteration 9: 0.06
+Iteration 10: 0.08
+
+Results for 5 records averaged over 11 repetitions:
+Actual rows fetched: 5
+Time to execute select: 0.97 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.98 seconds
+Iteration 0: 0.08
+Iteration 1: 0.11
+Iteration 2: 0.13
+Iteration 3: 0.40
+Iteration 4: 0.27
+Iteration 5: 0.07
+Iteration 6: 0.12
+Iteration 7: 0.10
+Iteration 8: 0.11
+Iteration 9: 0.07
+Iteration 10: 0.08
+
+Results for 10 records averaged over 11 repetitions:
+Actual rows fetched: 10
+Time to execute select: 0.13 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.14 seconds
+Iteration 0: 0.55
+Iteration 1: 0.16
+Iteration 2: 0.16
+Iteration 3: 0.36
+Iteration 4: 0.46
+Iteration 5: 0.53
+Iteration 6: 0.56
+Iteration 7: 0.16
+Iteration 8: 0.12
+Iteration 9: 0.22
+Iteration 10: 0.21
+
+Results for 100 records averaged over 11 repetitions:
+Actual rows fetched: 100
+Time to execute select: 0.31 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 0.32 seconds
+Iteration 0: 1.75
+Iteration 1: 1.72
+Iteration 2: 1.93
+Iteration 3: 0.41
+Iteration 4: 2.29
+Iteration 5: 1.75
+Iteration 6: 1.42
+Iteration 7: 0.31
+Iteration 8: 1.98
+Iteration 9: 2.56
+Iteration 10: 1.19
+
+Results for 500 records averaged over 11 repetitions:
+Actual rows fetched: 500
+Time to execute select: 1.57 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 1.58 seconds
+Iteration 0: 1.04
+Iteration 1: 3.39
+Iteration 2: 2.45
+Iteration 3: 2.69
+Iteration 4: 3.73
+Iteration 5: 1.03
+Iteration 6: 2.10
+Iteration 7: 4.61
+Iteration 8: 3.02
+Iteration 9: 2.63
+Iteration 10: 2.38
+
+Results for 1000 records averaged over 11 repetitions:
+Actual rows fetched: 1000
+Time to execute select: 2.63 seconds
+Time to put into dataframe: 0.01 seconds
+Total time: 2.64 seconds
+
+Current Query: SELECT * FROM "udr" WHERE subscriptionid < 11400 AND subscriptionid > 11360 LIMIT 
+Invalid Query: At least one replica failed

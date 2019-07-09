@@ -7,15 +7,16 @@ import csv
 from pandas.io.json import json_normalize
 import time
 import random
+import threading
 
 # Global vars
-num_rows_list = [5000, 10000, 100000, 500000, 1000000]
+num_rows_list = [5, 10, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
 num_cols = 42
 num_repetitions = 11
 output_file = "output.txt"
 csv_filename = "output.csv"
-file = open(output_file, "w")
-csv_file = open(csv_filename, "w")
+file = open(output_file, "w", buffering=1)
+csv_file = open(csv_filename, "w", buffering=1)
 clkhs_instance = '192.168.5.60'
 cass_instance = 'dev-cassandra.ksg.int'
 clkhs_port = 9000
@@ -83,7 +84,7 @@ cass_table_definition = ("CREATE TABLE \"CassandraPractice\".udr_copy1 (\n" +
     "AND read_repair_chance = 0.0\n" +
     "AND speculative_retry = '99.0PERCENTILE'\n" +
     "AND caching = {\n" +
-    "	'keys' : 'ALL',\n" +
+    "	'keys' : 'NONE',\n" +
     "	'rows_per_partition' : 'NONE'\n" +
     "}\n" +
     "AND compression = {\n" +
@@ -100,7 +101,9 @@ query_descriptions = ["Buld Retrieval",
     "Bulk Retreival: partitionhash = -1",
     "Bulk Retreival: carrierid = 18000",
     "Bulk Retreival: fileid = 278",
-    "Bulk Retreival: usagetypeid = 0"]
+    "Bulk Retreival: usagetypeid = 0",
+    "Bulk Retreival: partitionhash < 190512005",
+    "Bulk Retreival: subscriptionid < 11400 AND subscriptionid > 11360"]
 
 # Global functions
 def do_logging(line):
@@ -176,6 +179,18 @@ do_logging('Beginning Clickhouse Test')
 from clickhouse_driver import Client
 
 # Variables/constants
+clkhs_artificial_queries = ["select direction,forwarding_statusstatus,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by direction,forwarding_statusstatus,icmp_type order by connections desc limit 50",
+    "select out_src_mac,tcp_flags,out_src_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by out_src_mac,tcp_flags,out_src_mac order by connections desc limit 50",
+    "select tcp_flags,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags,icmp_type order by connections desc limit 50",
+    "select out_src_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by out_src_mac order by connections desc limit 50",
+    "select flowset_id,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by flowset_id order by connections desc limit 50",
+    "select protocolname,ipv4_src_addr,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by protocolname,ipv4_src_addr order by connections desc limit 50",
+    "select dst_mask,ipv4_next_hop,in_dst_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by dst_mask,ipv4_next_hop,in_dst_mac order by connections desc limit 50",
+    "select in_dst_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by in_dst_mac order by connections desc limit 50",
+    "select in_bytes,ipv4_next_hop,last_switched,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by in_bytes,ipv4_next_hop,last_switched order by connections desc limit 50",
+    "select tcp_flags,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags order by connections desc limit 50"] # For use in the threads
+clkhs_stop_threads = False
+
 clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, \n" +
     "visitParamExtractString(Message, 'hashcode') AS hashcode, \n" +
     "visitParamExtractString(Message, 'accountnumber') AS accountnumber, \n" +
@@ -219,16 +234,42 @@ clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'partitionhas
     "visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, \n" +
     "visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid \n" +
     "FROM radius.udr \n")
+
 clkhs_select_query_midfixes = ["LIMIT ",
     "WHERE partitionhash = -1 \n" + "LIMIT ",
     "WHERE carrierid = 18000 \n" + "LIMIT ",
     "WHERE fileid = 278 \n" + "LIMIT ",
-    "WHERE usagetypeid = 0 \n" + "LIMIT "]
+    "WHERE usagetypeid = 0 \n" + "LIMIT ",
+    "WHERE partitionhash < 190512005 \n" + "LIMIT ",
+    "WHERE subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT "]
+
 clkhs_UDR_df = pd.DataFrame()
 
 # Functions
-def clkhs_start_artificial_load():
-    i = 0
+def clkhs_artificial_load():
+    do_logging('Thread ' + str(threading.get_ident()) + ' starting')
+    clk_settings = {'max_threads': 8, 'max_block_size': 5000}
+    client = Client(host=clkhs_instance, port='', settings=clk_settings, connect_timeout=60, send_receive_timeout=900, sync_request_timeout=120)
+    settings = {'max_block_size': 5000}
+    while (not clkhs_stop_threads):
+        try:
+            # Select a query to issue
+            query = clkhs_artificial_queries[random.randint(0, 9)]
+            do_logging('Thread ' + str(threading.get_ident()) + ' starting background query: ' + query)
+
+            # Issue query and iterate through result set
+            result = client.execute_iter(query, settings)
+            for x in result:
+                if (clkhs_stop_threads):
+                    return
+        except Exception as e: 
+
+            # This is generally a serverside memory exception
+            do_logging('Thread ' + str(threading.get_ident()) + ' encountered an exception:')
+            do_logging(e)
+            time.sleep(5)
+            do_logging('Continuing after exception')
+            continue
 
 # clkhs setup
 clk_settings = {'max_threads': 8, 'max_block_size': 5000}
@@ -237,6 +278,13 @@ client = Client(host=clkhs_instance, port='', settings=clk_settings, connect_tim
 clkhs_query_timing_matrix = []
 clkhs_parse_timing_matrix = []
 clkhs_rows_returned_matrix = []
+
+# Start artifical load
+threads = []
+for i in range(0, 4):
+    threads.append(threading.Thread(target=clkhs_artificial_load))
+    threads[i].start()
+    time.sleep(1)
 
 # Time the retrieval of various number of records
 # Iterate over the queries
@@ -263,7 +311,6 @@ for clkhs_select_query_midfix in clkhs_select_query_midfixes:
             time.sleep(random.randint(50, 61))
 
             # Do the query and parsing
-            clkhs_start_artificial_load()
             start_time = time.perf_counter()
             result = client.execute_iter(clkhs_select_query_prefix + clkhs_select_query_midfix + str(num_rows) + ';', settings)
             clkhs_UDR_list = []
@@ -304,9 +351,9 @@ for clkhs_select_query_midfix in clkhs_select_query_midfixes:
 
         if (do_break):
             for j in range(0, len(num_rows_list) - len(clkhs_avg_query_times)):
-                clkhs_avg_query_times.append(-1.0)
-                clkhs_avg_parse_times.append(-1.0)
-                clkhs_rows_returned_list.append(-1)
+                clkhs_avg_query_times.append(0.0)
+                clkhs_avg_parse_times.append(0.0)
+                clkhs_rows_returned_list.append(0)
             break
     
     # Add to lists
@@ -314,7 +361,13 @@ for clkhs_select_query_midfix in clkhs_select_query_midfixes:
     clkhs_parse_timing_matrix.append(clkhs_avg_parse_times)
     clkhs_rows_returned_matrix.append(clkhs_rows_returned_list)
         
-csv_file.write(format_output("CH", query_descriptions, num_rows_list, clkhs_query_timing_matrix, clkhs_parse_timing_matrix, clkhs_rows_returned_matrix))
+# Write to file
+csv_file.write(format_output("CH", query_descriptions, num_rows_list, clkhs_query_timing_matrix, clkhs_parse_timing_matrix, clkhs_rows_returned_matrix) + '\n')
+
+# Clean up artifical load
+clkhs_stop_threads = True
+for thread in threads:
+    thread.join()
 
 
 
@@ -327,19 +380,19 @@ from cassandra.auth import PlainTextAuthProvider
 
 # Variables/constants
 cass_select_query_prefixes = ['SELECT * FROM "udr" LIMIT ', 
-    'SELECT * FROM "udr" WHERE partitionhash = -1',
-    'SELECT * FROM "udr" WHERE carrierid = 18000 LIMIT '
+    'SELECT * FROM "udr" WHERE partitionhash = -1 LIMIT ',
+    'SELECT * FROM "udr" WHERE carrierid = 18000 LIMIT ',
     'SELECT * FROM "udr" WHERE fileid = 278 LIMIT ', 
-    'SELECT * FROM "udr" WHERE usagetypeid = 0 LIMIT ']
+    'SELECT * FROM "udr" WHERE usagetypeid = 0 LIMIT ',
+    'SELECT * FROM "udr" WHERE partitionhash < 190512005 LIMIT ',
+    'SELECT * FROM "udr" WHERE subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ']
+cass_filtering_postfix = " ALLOW FILTERING"
 cass_UDR_df = pd.DataFrame()
 cass_page_size = 5000
 
 # Functions
 def pandas_factory(colnames, rows):
     return pd.DataFrame(rows, columns=colnames)
-
-def cass_start_artificial_load():
-    pi = 0
 
 # cassandra setup
 authentication = PlainTextAuthProvider(username='devadmin', password='Keys2TheK1ngd0m')
@@ -367,7 +420,19 @@ for cass_select_query_prefix in cass_select_query_prefixes:
             total_parse_time = 0.0
             rows_returned = 0
             do_break = False
-            session = cluster.connect('CassandraPractice')
+
+            # Setup connection (or try to)
+            for k in range(0, 10):
+                try:
+                    session = cluster.connect('CassandraPractice')
+                    break
+                except Exception as e:
+                    do_logging('Exception while connecting to cassandra: ')
+                    do_logging(e)
+                    time.sleep(5)
+                    do_logging('retrying connection:')
+                    continue
+            # If the connection was not establsihed, this error will fall through and result in this query being skipped
             session.row_factory = pandas_factory
             session.default_fetch_size = cass_page_size
 
@@ -380,9 +445,8 @@ for cass_select_query_prefix in cass_select_query_prefixes:
                 time.sleep(random.randint(50, 61))
 
                 # Do the initial query and parsing
-                cass_start_artificial_load()
                 start_time = time.perf_counter()
-                rows = session.execute(cass_select_query_prefix + str(num_rows) + ' ALLOW FILTERING;', timeout=None)
+                rows = session.execute(cass_select_query_prefix + str(num_rows) + cass_filtering_postfix + ';', timeout=None)
                 mid_time = time.perf_counter()
                 cass_UDR_list = []
                 cass_UDR_list.extend(rows._current_rows.values.tolist())
@@ -437,9 +501,9 @@ for cass_select_query_prefix in cass_select_query_prefixes:
             session.shutdown()
             if (do_break):
                 for j in range(0, len(num_rows_list) - len(cass_avg_query_times)):
-                    cass_avg_query_times.append(-1.0)
-                    cass_avg_parse_times.append(-1.0)
-                    cass_rows_returned_list.append(-1)
+                    cass_avg_query_times.append(0.0)
+                    cass_avg_parse_times.append(0.0)
+                    cass_rows_returned_list.append(0)
                 break
 
         # Add to lists
@@ -449,21 +513,27 @@ for cass_select_query_prefix in cass_select_query_prefixes:
             
     except cassandra.ReadTimeout:
         do_logging('Coordinator Node Timeout')
-        cass_query_timing_matrix.append([-1.0] * num_repetitions)
-        cass_parse_timing_matrix.append([-1.0] * num_repetitions)
-        cass_rows_returned_matrix.append([-1] * num_repetitions)
+        cass_query_timing_matrix.append([-1.0] * len(num_rows_list))
+        cass_parse_timing_matrix.append([-1.0] * len(num_rows_list))
+        cass_rows_returned_matrix.append([-1] * len(num_rows_list))
     except cassandra.Timeout:
         do_logging('Timeout')
-        cass_query_timing_matrix.append([-1.0] * num_repetitions)
-        cass_parse_timing_matrix.append([-1.0] * num_repetitions)
-        cass_rows_returned_matrix.append([-1] * num_repetitions)
+        cass_query_timing_matrix.append([-1.0] * len(num_rows_list))
+        cass_parse_timing_matrix.append([-1.0] * len(num_rows_list))
+        cass_rows_returned_matrix.append([-1] * len(num_rows_list))
     except cassandra.ReadFailure:
         do_logging('Invalid Query: At least one replica failed')
-        cass_query_timing_matrix.append([-1.0] * num_repetitions)
-        cass_parse_timing_matrix.append([-1.0] * num_repetitions)
-        cass_rows_returned_matrix.append([-1] * num_repetitions)
+        cass_query_timing_matrix.append([-1.0] * len(num_rows_list))
+        cass_parse_timing_matrix.append([-1.0] * len(num_rows_list))
+        cass_rows_returned_matrix.append([-1] * len(num_rows_list))
+    except Exception as e:
+        do_logging('Unexpected exception: Skipping query')
+        cass_query_timing_matrix.append([-2.0] * len(num_rows_list))
+        cass_parse_timing_matrix.append([-2.0] * len(num_rows_list))
+        cass_rows_returned_matrix.append([-2] * len(num_rows_list))
 
-format_output("C*", query_descriptions, num_rows_list, cass_query_timing_matrix, cass_parse_timing_matrix, cass_rows_returned_matrix)
+csv_file.write(format_output("C*", query_descriptions, num_rows_list, cass_query_timing_matrix, cass_parse_timing_matrix, cass_rows_returned_matrix))
 
 # Cleanup
+csv_file.close()
 file.close()
