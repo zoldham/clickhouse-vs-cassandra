@@ -103,7 +103,8 @@ query_descriptions = ["Buld Retrieval",
     "Bulk Retreival: fileid = 278",
     "Bulk Retreival: usagetypeid = 0",
     "Bulk Retreival: partitionhash < 190512005",
-    "Bulk Retreival: subscriptionid < 11400 AND subscriptionid > 11360"]
+    "Bulk Retreival: subscriptionid < 11400 AND subscriptionid > 11360",
+    "Bulk Retreival: partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360"]
 
 # Global functions
 def do_logging(line):
@@ -241,7 +242,8 @@ clkhs_select_query_midfixes = ["LIMIT ",
     "WHERE fileid = 278 \n" + "LIMIT ",
     "WHERE usagetypeid = 0 \n" + "LIMIT ",
     "WHERE partitionhash < 190512005 \n" + "LIMIT ",
-    "WHERE subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT "]
+    "WHERE subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT ",
+    "WHERE partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT "]
 
 clkhs_UDR_df = pd.DataFrame()
 
@@ -385,7 +387,8 @@ cass_select_query_prefixes = ['SELECT * FROM "udr" LIMIT ',
     'SELECT * FROM "udr" WHERE fileid = 278 LIMIT ', 
     'SELECT * FROM "udr" WHERE usagetypeid = 0 LIMIT ',
     'SELECT * FROM "udr" WHERE partitionhash < 190512005 LIMIT ',
-    'SELECT * FROM "udr" WHERE subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ']
+    'SELECT * FROM "udr" WHERE subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ',
+    'SELECT * FROM "udr" WHERE partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ']
 cass_filtering_postfix = " ALLOW FILTERING"
 cass_UDR_df = pd.DataFrame()
 cass_page_size = 5000
