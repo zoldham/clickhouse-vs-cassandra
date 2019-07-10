@@ -10,7 +10,7 @@ import random
 import threading
 
 # Global vars
-num_rows_list = [5, 10, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
+num_rows_list = [5, 10, 100, 500, 1000]# 5000, 10000, 100000, 500000, 1000000]
 num_cols = 42
 num_repetitions = 11
 output_file = "output.txt"
@@ -108,8 +108,10 @@ query_descriptions = ["Buld Retrieval",
 
 # Global functions
 def do_logging(line):
-    print(line)
-    file.write(str(line) + "\n")
+    log_line = (str(datetime.utcnow()) + ': ' + str(line)).replace('\n', '\n' + str(datetime.utcnow()) + ': ')
+
+    print(log_line)
+    file.write(log_line + '\n')
 
 def print_system_information():
     do_logging('Systems Information:')
@@ -304,38 +306,49 @@ for clkhs_select_query_midfix in clkhs_select_query_midfixes:
         do_break = False
 
         # Iterate set number of times, for repetitions sake
-        for i in range(0, num_repetitions):
-            query_time = 0.0
-            parse_time = 0.0
-            settings = {'max_block_size': 5000}
+        i = 0
+        while (i < num_repetitions):
+            try:
+                query_time = 0.0
+                parse_time = 0.0
+                settings = {'max_block_size': 5000}
 
-            # Wait
-            time.sleep(random.randint(50, 61))
+                # Wait
+                #time.sleep(random.randint(50, 61))
 
-            # Do the query and parsing
-            start_time = time.perf_counter()
-            result = client.execute_iter(clkhs_select_query_prefix + clkhs_select_query_midfix + str(num_rows) + ';', settings)
-            clkhs_UDR_list = []
-            for x in result:
-                clkhs_UDR_list.append(x)
-            mid_time = time.perf_counter()
-            clkhs_UDR_df = pd.DataFrame(clkhs_UDR_list)
-            end_time = time.perf_counter()
+                # Do the query and parsing
+                start_time = time.perf_counter()
+                result = client.execute_iter(clkhs_select_query_prefix + clkhs_select_query_midfix + str(num_rows) + ';', settings)
+                clkhs_UDR_list = []
+                for x in result:
+                    clkhs_UDR_list.append(x)
+                mid_time = time.perf_counter()
+                clkhs_UDR_df = pd.DataFrame(clkhs_UDR_list)
+                end_time = time.perf_counter()
 
-            # Get times
-            query_time = query_time + mid_time - start_time
-            parse_time = parse_time + end_time - mid_time
+                # Get times
+                query_time = query_time + mid_time - start_time
+                parse_time = parse_time + end_time - mid_time
 
-            # Aggregate
-            total_query_time = total_query_time + query_time
-            total_parse_time = total_parse_time + parse_time
-            rows_returned = int(clkhs_UDR_df.size / num_cols)
+                # Aggregate
+                total_query_time = total_query_time + query_time
+                total_parse_time = total_parse_time + parse_time
+                rows_returned = int(clkhs_UDR_df.size / num_cols)
 
-            do_logging('Iteration %d: %.2f' % (i, query_time + parse_time))
+                do_logging('Iteration %d: %.2f' % (i, query_time + parse_time))
 
-            # Break condition
-            if (num_rows > int(clkhs_UDR_df.size / num_cols)):
-                do_break = True
+                # Break condition
+                if (num_rows > int(clkhs_UDR_df.size / num_cols)):
+                    do_break = True
+                
+                i = i + 1
+
+            except Exception as e:  # In case of an error, try try again
+                do_logging('Main thread encountered an exception:')
+                do_logging(e)
+                time.sleep(5)
+                do_logging('Main thread continuing')
+                continue
 
         # Aggregate and add to list
         avg_query_time = total_query_time / num_repetitions
@@ -415,37 +428,37 @@ for cass_select_query_prefix in cass_select_query_prefixes:
     cass_avg_parse_times = []
     cass_rows_returned_list = []
 
-    try:
+    # Iterate over different limits
+    for num_rows in num_rows_list:
+        total_query_time = 0.0
+        total_parse_time = 0.0
+        rows_returned = 0
+        do_break = False
+        timeout = False
 
-        # Iterate over different limits
-        for num_rows in num_rows_list:
-            total_query_time = 0.0
-            total_parse_time = 0.0
-            rows_returned = 0
-            do_break = False
+        # Setup connection (or try to)
+        while (True):
+            try:
+                session = cluster.connect('CassandraPractice')
+                break
+            except Exception as e:
+                do_logging('Exception while connecting to cassandra: ')
+                do_logging(e)
+                time.sleep(5)
+                do_logging('retrying connection:')
+                continue
+        session.row_factory = pandas_factory
+        session.default_fetch_size = cass_page_size
 
-            # Setup connection (or try to)
-            for k in range(0, 10):
-                try:
-                    session = cluster.connect('CassandraPractice')
-                    break
-                except Exception as e:
-                    do_logging('Exception while connecting to cassandra: ')
-                    do_logging(e)
-                    time.sleep(5)
-                    do_logging('retrying connection:')
-                    continue
-            # If the connection was not establsihed, this error will fall through and result in this query being skipped
-            session.row_factory = pandas_factory
-            session.default_fetch_size = cass_page_size
-
-            # Iterate set number of times, for repetitions sake
-            for i in range(0, num_repetitions):
+        # Iterate set number of times, for repetitions sake
+        i = 0
+        while (i < num_repetitions):
+            try:
                 query_time = 0.0
                 parse_time = 0.0
 
                 # Wait
-                time.sleep(random.randint(50, 61))
+                #time.sleep(random.randint(50, 61))
 
                 # Do the initial query and parsing
                 start_time = time.perf_counter()
@@ -485,55 +498,72 @@ for cass_select_query_prefix in cass_select_query_prefixes:
 
                 if (num_rows > int(cass_UDR_df.size / num_cols)):
                     do_break = True
-            
-            # Aggregate and add to list
-            avg_query_time = total_query_time / num_repetitions
-            avg_parse_time = total_parse_time / num_repetitions
-            cass_avg_query_times.append(avg_query_time)
-            cass_avg_parse_times.append(avg_parse_time)
-            cass_rows_returned_list.append(rows_returned)
 
-            # Logging
-            do_logging("\nResults for %d records averaged over %d repetitions:" % (num_rows, num_repetitions))
-            do_logging("Actual rows fetched: %d" % (int(cass_UDR_df.size / num_cols)))
-            do_logging("Time to execute select: %.2f seconds" % (avg_query_time))
-            do_logging("Time to put into dataframe: %.2f seconds" % (avg_parse_time))
-            do_logging("Total time: %.2f seconds" % (avg_parse_time + avg_query_time))
+                i = i + 1
 
-            # Cleanup
-            session.shutdown()
-            if (do_break):
+            except cassandra.ReadTimeout:   # Timeout: will skip this query
+                do_logging('Coordinator Node Timeout')
+                do_break = True
+                timeout = True
+                total_query_time = -1 * num_repetitions
+                total_parse_time = -1 * num_repetitions
+                rows_returned = -1
+                break
+            except cassandra.Timeout:   # Timeout: Will skip this query
+                do_logging('Timeout')
+                do_break = True
+                timeout = True
+                total_query_time = -1 * num_repetitions
+                total_parse_time = -1 * num_repetitions
+                rows_returned = -1
+                break
+            except cassandra.ReadFailure:   # Cassandra error: Skip this query
+                do_logging('Error: At least one replica failed')
+                do_break = True
+                timeout = True
+                total_query_time = -1 * num_repetitions
+                total_parse_time = -1 * num_repetitions
+                rows_returned = -1
+                break
+            except Exception as e:  # Error: Try again
+                do_logging('Unexpected exception')
+                time.sleep(5)
+                continue
+        
+        # Aggregate and add to list
+        avg_query_time = total_query_time / num_repetitions
+        avg_parse_time = total_parse_time / num_repetitions
+        cass_avg_query_times.append(avg_query_time)
+        cass_avg_parse_times.append(avg_parse_time)
+        cass_rows_returned_list.append(rows_returned)
+
+        # Logging
+        do_logging("\nResults for %d records averaged over %d repetitions:" % (num_rows, num_repetitions))
+        do_logging("Actual rows fetched: %d" % (int(cass_UDR_df.size / num_cols)))
+        do_logging("Time to execute select: %.2f seconds" % (avg_query_time))
+        do_logging("Time to put into dataframe: %.2f seconds" % (avg_parse_time))
+        do_logging("Total time: %.2f seconds" % (avg_parse_time + avg_query_time))
+
+        # Cleanup
+        session.shutdown()
+        if (do_break):  # Fill in the rest of the times/rows for consistent formatting
+            if (timeout):
+                for j in range(0, len(num_rows_list) - len(cass_avg_query_times)):
+                    cass_avg_query_times.append(-1.0)
+                    cass_avg_parse_times.append(-1.0)
+                    cass_rows_returned_list.append(-1)
+            else:
                 for j in range(0, len(num_rows_list) - len(cass_avg_query_times)):
                     cass_avg_query_times.append(0.0)
                     cass_avg_parse_times.append(0.0)
                     cass_rows_returned_list.append(0)
-                break
-
-        # Add to lists
-        cass_query_timing_matrix.append(cass_avg_query_times)
-        cass_parse_timing_matrix.append(cass_avg_parse_times)
-        cass_rows_returned_matrix.append(cass_rows_returned_list)
             
-    except cassandra.ReadTimeout:
-        do_logging('Coordinator Node Timeout')
-        cass_query_timing_matrix.append([-1.0] * len(num_rows_list))
-        cass_parse_timing_matrix.append([-1.0] * len(num_rows_list))
-        cass_rows_returned_matrix.append([-1] * len(num_rows_list))
-    except cassandra.Timeout:
-        do_logging('Timeout')
-        cass_query_timing_matrix.append([-1.0] * len(num_rows_list))
-        cass_parse_timing_matrix.append([-1.0] * len(num_rows_list))
-        cass_rows_returned_matrix.append([-1] * len(num_rows_list))
-    except cassandra.ReadFailure:
-        do_logging('Invalid Query: At least one replica failed')
-        cass_query_timing_matrix.append([-1.0] * len(num_rows_list))
-        cass_parse_timing_matrix.append([-1.0] * len(num_rows_list))
-        cass_rows_returned_matrix.append([-1] * len(num_rows_list))
-    except Exception as e:
-        do_logging('Unexpected exception: Skipping query')
-        cass_query_timing_matrix.append([-2.0] * len(num_rows_list))
-        cass_parse_timing_matrix.append([-2.0] * len(num_rows_list))
-        cass_rows_returned_matrix.append([-2] * len(num_rows_list))
+            break
+
+    # Add to lists
+    cass_query_timing_matrix.append(cass_avg_query_times)
+    cass_parse_timing_matrix.append(cass_avg_parse_times)
+    cass_rows_returned_matrix.append(cass_rows_returned_list)
 
 csv_file.write(format_output("C*", query_descriptions, num_rows_list, cass_query_timing_matrix, cass_parse_timing_matrix, cass_rows_returned_matrix))
 
