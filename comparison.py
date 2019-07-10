@@ -10,7 +10,7 @@ import random
 import threading
 
 # Global vars
-num_rows_list = [5, 10, 100, 500, 1000]# 5000, 10000, 100000, 500000, 1000000]
+num_rows_list = [5, 10, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
 num_cols = 42
 num_repetitions = 11
 output_file = "output.txt"
@@ -314,7 +314,7 @@ for clkhs_select_query_midfix in clkhs_select_query_midfixes:
                 settings = {'max_block_size': 5000}
 
                 # Wait
-                #time.sleep(random.randint(50, 61))
+                time.sleep(random.randint(50, 61))
 
                 # Do the query and parsing
                 start_time = time.perf_counter()
@@ -458,7 +458,7 @@ for cass_select_query_prefix in cass_select_query_prefixes:
                 parse_time = 0.0
 
                 # Wait
-                #time.sleep(random.randint(50, 61))
+                time.sleep(random.randint(50, 61))
 
                 # Do the initial query and parsing
                 start_time = time.perf_counter()
