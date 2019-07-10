@@ -10,101 +10,19 @@ import random
 import threading
 
 # Global vars
-num_rows_list = [5, 10, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
+num_rows_list = [1, 5, 10, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
 num_cols = 42
 num_repetitions = 11
-output_file = "output_for_sean.txt"
-csv_filename = "output_for_sean.csv"
+output_file = "output.txt"
+csv_filename = "output.csv"
 file = open(output_file, "w", buffering=1)
 csv_file = open(csv_filename, "w", buffering=1)
 clkhs_instance = '192.168.5.60'
 cass_instance = 'dev-cassandra.ksg.int'
 clkhs_port = 9000
 cass_port = 9042
-clkhs_table_definition = ("CREATE TABLE radius.udr ( \n" +
-    "   CreateDate DateTime default now(), \n" +
-    "   Message String \n" +
-    ") ENGINE = MergeTree() \n" + 
-    "PARTITION BY toYYYYMM(CreateDate) \n" + 
-    "ORDER BY tuple()")
-# TODO: Update this definition if I add indicies
-cass_table_definition = ("CREATE TABLE \"CassandraPractice\".udr_copy1 (\n" +
-    "	partitionhash int,\n" +
-    "	hashcode text,\n" +
-    "	accountnumber text,\n" +
-    "	airtimeclass int,\n" +
-    "	airtimeunits double,\n" +
-    "	allocationcompletedate text,\n" +
-    "	apn text,\n" +
-    "	callednumber text,\n" +
-    "	callingnumber text,\n" +
-    "	carrierid int,\n" +
-    "	cellid text,\n" +
-    "	chargingid text,\n" +
-    "	costcenterid int,\n" +
-    "	downlinkvol bigint,\n" +
-    "	duration double,\n" +
-    "	exactusagedateonly date,\n" +
-    "	exactusagetime text,\n" +
-    "	fileid int,\n" +
-    "	iccid text,\n" +
-    "	imei text,\n" +
-    "	imsi text,\n" +
-    "	lineid bigint,\n" +
-    "	linenumber int,\n" +
-    "	mobilecountrycode text,\n" +
-    "	mobilenetworkcode text,\n" +
-    "	mobileoriginated boolean,\n" +
-    "	msisdn text,\n" +
-    "	network text,\n" +
-    "	orgid int,\n" +
-    "	orgurn text,\n" +
-    "	plmn text,\n" +
-    "	propertybag MAP<text, text>,\n" +
-    "	recordtype text,\n" +
-    "	roamingindicator text,\n" +
-    "	roundingdate text,\n" +
-    "	sender text,\n" +
-    "	subscriptionid int,\n" +
-    "	subscriptionurn text,\n" +
-    "	surrecordtypeid int,\n" +
-    "	tapcode text,\n" +
-    "	uplinkvol bigint,\n" +
-    "	usagetypeid int,\n" +
-    "	PRIMARY KEY (partitionhash, hashcode)\n" +
-    ") WITH bloom_filter_fp_chance = 0.01\n" +
-    "AND comment = ''\n" +
-    "AND crc_check_chance = 1.0\n" +
-    "AND dclocal_read_repair_chance = 0.1\n" +
-    "AND default_time_to_live = 0\n" +
-    "AND gc_grace_seconds = 864000\n" +
-    "AND max_index_interval = 2048\n" +
-    "AND memtable_flush_period_in_ms = 0\n" +
-    "AND min_index_interval = 128\n" +
-    "AND read_repair_chance = 0.0\n" +
-    "AND speculative_retry = '99.0PERCENTILE'\n" +
-    "AND caching = {\n" +
-    "	'keys' : 'NONE',\n" +
-    "	'rows_per_partition' : 'NONE'\n" +
-    "}\n" +
-    "AND compression = {\n" +
-    "	'chunk_length_in_kb' : 64,\n" +
-    "	'class' : 'LZ4Compressor',\n" +
-    "	'enabled' : true\n" +
-    "}\n" +
-    "AND compaction = {\n" +
-    "	'class' : 'SizeTieredCompactionStrategy',\n" +
-    "	'max_threshold' : 32,\n" +
-    "	'min_threshold' : 4\n" +
-    "};")
-query_descriptions = ["Buld Retrieval",
-    "Bulk Retreival: partitionhash = -1",
-    "Bulk Retreival: carrierid = 18000",
-    "Bulk Retreival: fileid = 278",
-    "Bulk Retreival: usagetypeid = 0",
-    "Bulk Retreival: partitionhash < 190512005",
-    "Bulk Retreival: subscriptionid < 11400 AND subscriptionid > 11360",
-    "Bulk Retreival: partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360"]
+query_descriptions = ['WHERE provisioning_request_id = "a1e849ee-2d74-488a-92c1-3119778e21ac" AND pid = "8901263804713070001" LIMIT ',
+    'WHERE provisioning_request_id = "d2c24b0a-1495-4cc1-9263-72a4aa56a6c8"']
 
 # Global functions
 def do_logging(line):
@@ -112,13 +30,6 @@ def do_logging(line):
 
     print(log_line)
     file.write(log_line + '\n')
-
-def print_system_information():
-    do_logging('Systems Information:')
-    do_logging('\nClickhouse Instance: ' + str(clkhs_instance) + ':' + str(clkhs_port))
-    do_logging('\nCassandra Instance: ' + str(cass_instance) + ':' + str(cass_port))
-    do_logging('\nClickhouse Table Definition:\n' + str(clkhs_table_definition))
-    do_logging('\nCassandra Table Definition:\n' + str(cass_table_definition))
 
 def format_output(label, query_descriptors, num_rows_list, query_times_matrix, parse_times_matrix, rows_returned_matrix):
     query =             ",Query Description,"
@@ -170,9 +81,6 @@ def format_output(label, query_descriptors, num_rows_list, query_times_matrix, p
     final = query + "\n" + rows_selected + "\n" + rows_returned + "\n" + select_time + "\n" + dataframe_time + "\n" + total + "\n"
     return final
 
-# Global Execution
-print_system_information()
-do_logging('\n')
 
 
 
@@ -194,58 +102,22 @@ clkhs_artificial_queries = ["select direction,forwarding_statusstatus,icmp_type,
     "select tcp_flags,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags order by connections desc limit 50"] # For use in the threads
 clkhs_stop_threads = False
 
-clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, \n" +
-    "visitParamExtractString(Message, 'hashcode') AS hashcode, \n" +
-    "visitParamExtractString(Message, 'accountnumber') AS accountnumber, \n" +
-    "visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, \n" +
-    "visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, \n" +
-    "visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, \n" +
-    "visitParamExtractString(Message, 'apn') AS apn, \n" +
-    "visitParamExtractString(Message, 'callednumber') AS callednumber, \n" +
-    "visitParamExtractString(Message, 'callingnumber') AS callingnumber, \n" +
-    "visitParamExtractInt(Message, 'carrierid') AS carrierid, \n" +
-    "visitParamExtractString(Message, 'cellid') AS cellid, \n" +
-    "visitParamExtractString(Message, 'chargingid') AS chargingid, \n" +
-    "visitParamExtractInt(Message, 'costcenterid') AS costcenterid, \n" +
-    "visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, \n" +
-    "visitParamExtractFloat(Message, 'duration') AS duration, \n" +
-    "visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, \n" +
-    "visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, \n" +
-    "visitParamExtractInt(Message, 'fileid') AS fileid, \n" +
-    "visitParamExtractString(Message, 'iccid') AS iccid, \n" +
-    "visitParamExtractString(Message, 'imei') AS imei, \n" +
-    "visitParamExtractString(Message, 'imsi') AS imsi, \n" +
-    "visitParamExtractInt(Message, 'lineid') AS lineid, \n" +
-    "visitParamExtractInt(Message, 'linenumber') AS linenumber, \n" +
-    "visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, \n" +
-    "visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, \n" +
-    "visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, \n" +
-    "visitParamExtractString(Message, 'msisdn') AS msisdn, \n" +
-    "visitParamExtractString(Message, 'network') AS network, \n" +
-    "visitParamExtractInt(Message, 'orgid') AS orgid, \n" +
-    "visitParamExtractString(Message, 'orgurn') AS orgurn, \n" +
-    "visitParamExtractString(Message, 'plmn') AS plmn, \n" +
-    "visitParamExtractRaw(Message, 'propertybag') AS propertybag, \n" +
-    "visitParamExtractString(Message, 'recordtype') AS recordtype, \n" +
-    "visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, \n" +
-    "visitParamExtractString(Message, 'roundingdate') AS roundingdate, \n" +
-    "visitParamExtractString(Message, 'sender') AS sender, \n" +
-    "visitParamExtractInt(Message, 'subscriptionid') AS subscriptionid, \n" +
-    "visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, \n" +
-    "visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, \n" +
-    "visitParamExtractString(Message, 'tapcode') AS tapcode, \n" +
-    "visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, \n" +
-    "visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid \n" +
-    "FROM radius.udr \n")
+clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'provisioning_request_id') AS provisioning_request_id, \n" +
+    "visitParamExtractString(Message, 'pid') AS pid, \n" +
+    "visitParamExtractString(Message, 'async_response') AS async_response, \n" +
+    "visitParamExtractString(Message, 'completed_on') AS completed_on, \n" +
+    "visitParamExtractString(Message, 'created_on') AS created_on, \n" +
+    "visitParamExtractString(Message, 'finalized_response') AS finalized_response, \n" +
+    "visitParamExtractString(Message, 'payload') AS payload, \n" +
+    "visitParamExtractString(Message, 'request_details') AS request_details, \n" +
+    "visitParamExtractString(Message, 'response_message') AS response_message, \n" +
+    "visitParamExtractBool(Message, 'response_successful') AS response_successful, \n" +
+    "visitParamExtractString(Message, 'sync_request') AS sync_request, \n" +
+    "visitParamExtractString(Message, 'sync_response') AS sync_response \n" +
+    "FROM radius.provisioning_request \n")
 
-clkhs_select_query_midfixes = ["LIMIT ",
-    "WHERE partitionhash = -1 \n" + "LIMIT ",
-    "WHERE carrierid = 18000 \n" + "LIMIT ",
-    "WHERE fileid = 278 \n" + "LIMIT ",
-    "WHERE usagetypeid = 0 \n" + "LIMIT ",
-    "WHERE partitionhash < 190512005 \n" + "LIMIT ",
-    "WHERE subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT ",
-    "WHERE partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT "]
+clkhs_select_query_midfixes = ['WHERE provisioning_request_id = "a1e849ee-2d74-488a-92c1-3119778e21ac" AND pid = "8901263804713070001" LIMIT ',
+   'WHERE provisioning_request_id = "d2c24b0a-1495-4cc1-9263-72a4aa56a6c8" LIMIT ']
 
 clkhs_UDR_df = pd.DataFrame()
 
@@ -394,14 +266,8 @@ from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 
 # Variables/constants
-cass_select_query_prefixes = ['SELECT * FROM "udr" LIMIT ', 
-    'SELECT * FROM "udr" WHERE partitionhash = -1 LIMIT ',
-    'SELECT * FROM "udr" WHERE carrierid = 18000 LIMIT ',
-    'SELECT * FROM "udr" WHERE fileid = 278 LIMIT ', 
-    'SELECT * FROM "udr" WHERE usagetypeid = 0 LIMIT ',
-    'SELECT * FROM "udr" WHERE partitionhash < 190512005 LIMIT ',
-    'SELECT * FROM "udr" WHERE subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ',
-    'SELECT * FROM "udr" WHERE partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ']
+cass_select_query_prefixes = ['SELECT * FROM "provisioning_request" WHERE provisioning_request_id = "a1e849ee-2d74-488a-92c1-3119778e21ac" AND pid = "8901263804713070001" LIMIT ',
+    'SELECT * FROM "provisioning_request" WHERE provisioning_request_id = "d2c24b0a-1495-4cc1-9263-72a4aa56a6c8"']
 cass_filtering_postfix = " ALLOW FILTERING"
 cass_UDR_df = pd.DataFrame()
 cass_page_size = 5000
