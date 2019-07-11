@@ -17,7 +17,6 @@ other_insert_query = "INSERT INTO radius.udr_other(partitionhash, hashcode, carr
 UDR_data_df = pd.read_csv('backup.csv')
 clk_settings = {'max_threads': 8, 'max_block_size': 5000}
 client = Client(host='192.168.5.60', port='', settings=clk_settings, connect_timeout=60, send_receive_timeout=900, sync_request_timeout=120)
-mutex = threading.Lock()
 
 # Create tables
 create_table_query1 = ("CREATE TABLE radius.udr_other ( " +
@@ -36,18 +35,14 @@ create_table_query2 = ("CREATE TABLE radius.udr ( " +
 client.execute(create_table_query2)
 
 def other_insert_rows(clkhs_list, client):
-    mutex.acquire()
     print('Adding messages')
     UDR_clkhs_df = pd.DataFrame(clkhs_list, columns = ['partitionhash', 'hashcode', 'carrierid', 'subscriptionid', 'Message'])
     client.execute(other_insert_query, UDR_clkhs_df.to_dict('r'))
-    mutex.release()
 
 def json_insert_rows(clkhs_list, client):
-    mutex.acquire()
     print('Adding messages')
     UDR_clkhs_df = pd.DataFrame(clkhs_list, columns = ['Message'])
     client.execute(json_insert_query, UDR_clkhs_df.to_dict('r'))
-    mutex.release()
 
 def new_schema_fill():
     clk_settings = {'max_threads': 8, 'max_block_size': 5000}
