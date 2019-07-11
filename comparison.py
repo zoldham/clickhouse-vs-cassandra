@@ -10,23 +10,25 @@ import random
 import threading
 
 # Global vars
-num_rows_list = [5, 10, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
+num_rows_list = [5, 10]#, 100, 500, 1000, 5000, 10000, 100000, 500000, 1000000]
 num_cols = 42
 num_repetitions = 11
-output_file = "output_for_sean.txt"
-csv_filename = "output_for_sean.csv"
+output_file = "output.txt"
+csv_filename = "output.csv"
 file = open(output_file, "w", buffering=1)
 csv_file = open(csv_filename, "w", buffering=1)
 clkhs_instance = '192.168.5.60'
 cass_instance = 'dev-cassandra.ksg.int'
 clkhs_port = 9000
 cass_port = 9042
-clkhs_table_definition = ("CREATE TABLE radius.udr ( \n" +
-    "   CreateDate DateTime default now(), \n" +
-    "   Message String \n" +
-    ") ENGINE = MergeTree() \n" + 
-    "PARTITION BY toYYYYMM(CreateDate) \n" + 
-    "ORDER BY tuple()")
+clkhs_table_definition = ("CREATE TABLE radius.udr_other ( " +
+    "CreateDate DateTime default now(), " +
+    "partitionhash UInt64," +
+    "hashcode String," +
+    "carrierid UInt64," +
+    "subscriptionid UInt64," +
+    "Message String " +
+    ") ENGINE = MergeTree() PARTITION BY toYYYYMM(CreateDate) order by partitionhash")
 # TODO: Update this definition if I add indicies
 cass_table_definition = ("CREATE TABLE \"CassandraPractice\".udr_copy1 (\n" +
     "	partitionhash int,\n" +
@@ -97,14 +99,12 @@ cass_table_definition = ("CREATE TABLE \"CassandraPractice\".udr_copy1 (\n" +
     "	'max_threshold' : 32,\n" +
     "	'min_threshold' : 4\n" +
     "};")
-query_descriptions = ["Buld Retrieval",
-    "Bulk Retreival: partitionhash = -1",
-    "Bulk Retreival: carrierid = 18000",
-    "Bulk Retreival: fileid = 278",
-    "Bulk Retreival: usagetypeid = 0",
-    "Bulk Retreival: partitionhash < 190512005",
-    "Bulk Retreival: subscriptionid < 11400 AND subscriptionid > 11360",
-    "Bulk Retreival: partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360"]
+query_descriptions = ["Bulk Retrieval",
+    "Bulk Retreival: partitionhash = [-1000, -1]",
+    "Bulk Retreival: carrierid = [18000, 19000]",
+    "Bulk Retreival: partitionhash <= [190512000, 190512039]",
+    "Bulk Retreival: subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]",
+    "Bulk Retreival: partitionhash = [190512000, 190512039] AND subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]"]
 
 # Global functions
 def do_logging(line):
@@ -194,7 +194,7 @@ clkhs_artificial_queries = ["select direction,forwarding_statusstatus,icmp_type,
     "select tcp_flags,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags order by connections desc limit 50"] # For use in the threads
 clkhs_stop_threads = False
 
-clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, \n" +
+clkhs_select_query_prefixes = [("SELECT visitParamExtractInt(Message, 'partitionhash') AS partitionhash, \n" +
     "visitParamExtractString(Message, 'hashcode') AS hashcode, \n" +
     "visitParamExtractString(Message, 'accountnumber') AS accountnumber, \n" +
     "visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, \n" +
@@ -236,16 +236,50 @@ clkhs_select_query_prefix = ("SELECT visitParamExtractInt(Message, 'partitionhas
     "visitParamExtractString(Message, 'tapcode') AS tapcode, \n" +
     "visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, \n" +
     "visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid \n" +
-    "FROM radius.udr \n")
-
-clkhs_select_query_midfixes = ["LIMIT ",
-    "WHERE partitionhash = -1 \n" + "LIMIT ",
-    "WHERE carrierid = 18000 \n" + "LIMIT ",
-    "WHERE fileid = 278 \n" + "LIMIT ",
-    "WHERE usagetypeid = 0 \n" + "LIMIT ",
-    "WHERE partitionhash < 190512005 \n" + "LIMIT ",
-    "WHERE subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT ",
-    "WHERE partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360 \n" + "LIMIT "]
+    "FROM radius.udr \n"),
+    ("SELECT partitionhash, \n" +
+    "hashcode, \n" +
+    "visitParamExtractString(Message, 'accountnumber') AS accountnumber, \n" +
+    "visitParamExtractInt(Message, 'airtimeclass') AS airtimeclass, \n" +
+    "visitParamExtractFloat(Message, 'airtimeunits') AS airtimeunits, \n" +
+    "visitParamExtractString(Message, 'allocationcompletedate') AS allocationcompletedate, \n" +
+    "visitParamExtractString(Message, 'apn') AS apn, \n" +
+    "visitParamExtractString(Message, 'callednumber') AS callednumber, \n" +
+    "visitParamExtractString(Message, 'callingnumber') AS callingnumber, \n" +
+    "carrierid, \n" +
+    "visitParamExtractString(Message, 'cellid') AS cellid, \n" +
+    "visitParamExtractString(Message, 'chargingid') AS chargingid, \n" +
+    "visitParamExtractInt(Message, 'costcenterid') AS costcenterid, \n" +
+    "visitParamExtractInt(Message, 'downlinkvol') AS downlinkvol, \n" +
+    "visitParamExtractFloat(Message, 'duration') AS duration, \n" +
+    "visitParamExtractString(Message, 'exactusagedateonly') AS exactusagedateonly, \n" +
+    "visitParamExtractString(Message, 'exactusagetime') AS exactusagetime, \n" +
+    "visitParamExtractInt(Message, 'fileid') AS fileid, \n" +
+    "visitParamExtractString(Message, 'iccid') AS iccid, \n" +
+    "visitParamExtractString(Message, 'imei') AS imei, \n" +
+    "visitParamExtractString(Message, 'imsi') AS imsi, \n" +
+    "visitParamExtractInt(Message, 'lineid') AS lineid, \n" +
+    "visitParamExtractInt(Message, 'linenumber') AS linenumber, \n" +
+    "visitParamExtractString(Message, 'mobilecountrycode') AS mobilecountrycode, \n" +
+    "visitParamExtractString(Message, 'mobilenetworkcode') AS mobilenetworkcode, \n" +
+    "visitParamExtractBool(Message, 'mobileoriginated') AS mobileoriginated, \n" +
+    "visitParamExtractString(Message, 'msisdn') AS msisdn, \n" +
+    "visitParamExtractString(Message, 'network') AS network, \n" +
+    "visitParamExtractInt(Message, 'orgid') AS orgid, \n" +
+    "visitParamExtractString(Message, 'orgurn') AS orgurn, \n" +
+    "visitParamExtractString(Message, 'plmn') AS plmn, \n" +
+    "visitParamExtractRaw(Message, 'propertybag') AS propertybag, \n" +
+    "visitParamExtractString(Message, 'recordtype') AS recordtype, \n" +
+    "visitParamExtractString(Message, 'roamingindicator') AS roamingindicator, \n" +
+    "visitParamExtractString(Message, 'roundingdate') AS roundingdate, \n" +
+    "visitParamExtractString(Message, 'sender') AS sender, \n" +
+    "subscriptionid, \n" +
+    "visitParamExtractString(Message, 'subscriptionurn') AS subscriptionurn, \n" +
+    "visitParamExtractInt(Message, 'surrecordtypeid') AS surrecordtypeid, \n" +
+    "visitParamExtractString(Message, 'tapcode') AS tapcode, \n" +
+    "visitParamExtractInt(Message, 'uplinkvol') AS uplinkvol, \n" +
+    "visitParamExtractInt(Message, 'usagetypeid') AS usagetypeid \n" +
+    "FROM radius.udr_other \n")]
 
 clkhs_UDR_df = pd.DataFrame()
 
@@ -275,13 +309,26 @@ def clkhs_artificial_load():
             do_logging('Continuing after exception')
             continue
 
+def clkhs_get_fuzzy_query(which):
+    if (which == 0):
+        return "LIMIT "
+    elif (which == 1):
+        return "WHERE partitionhash = " + str(random.randint(-1000, -1)) + " \nLIMIT "
+    elif (which == 2):
+        return "WHERE carrierid = " + str(random.randint(18000, 19000)) + " \nLIMIT "
+    elif (which == 3):
+        return "WHERE partitionhash <= " + str(random.randint(190512000, 190512039)) + " \nLIMIT "
+    elif (which == 4):
+        temp = random.randint(11111, 11211)
+        return "WHERE subscriptionid >= " + str(temp) + " AND subscriptionid <= " + str(random.randint(temp + 100, temp + 200)) + " \nLIMIT "
+    elif (which == 5):
+        temp = random.randint(11111, 11211)
+        partitionhash = random.randint(190512000, 190512039)
+        return "WHERE partitionhash = " + str(partitionhash) + " AND subscriptionid >= " + str(temp) + " AND subscriptionid <= " + str(random.randint(temp + 100, temp + 200)) + " \nLIMIT "
+
 # clkhs setup
 clk_settings = {'max_threads': 8, 'max_block_size': 5000}
 client = Client(host=clkhs_instance, port='', settings=clk_settings, connect_timeout=60, send_receive_timeout=900, sync_request_timeout=120)
-
-clkhs_query_timing_matrix = []
-clkhs_parse_timing_matrix = []
-clkhs_rows_returned_matrix = []
 
 # Start artifical load
 threads = []
@@ -291,98 +338,111 @@ for i in range(0, 4):
     time.sleep(1)
 
 # Time the retrieval of various number of records
-# Iterate over the queries
-for clkhs_select_query_midfix in clkhs_select_query_midfixes:
-    do_logging("\nCurrent Query: " + clkhs_select_query_prefix + clkhs_select_query_midfix)
-    clkhs_avg_query_times = []
-    clkhs_avg_parse_times = []
-    clkhs_rows_returned_list = []
+# schema # 0 is the json schema, schema # 2 is the updated schema
+# Iterate over the two schemas
+schema_num = -1
+for clkhs_select_query_prefix in clkhs_select_query_prefixes:
+    schema_num = schema_num + 1
+    do_logging('\n\nCurrent Schema: "CH(JSON)" if schema_num == 0 else "CH(NEW)')
 
-    # Iterate over different limits
-    for num_rows in num_rows_list:
-        total_query_time = 0.0
-        total_parse_time = 0.0
-        rows_returned = 0
-        do_break = False
+    clkhs_json_query_timing_matrix = []
+    clkhs_json_parse_timing_matrix = []
+    clkhs_json_rows_returned_matrix = []
+    query_num = -1
 
-        # Iterate set number of times, for repetitions sake
-        i = 0
-        while (i < num_repetitions):
-            try:
-                query_time = 0.0
-                parse_time = 0.0
-                settings = {'max_block_size': 5000}
+    # Iterate over the queries
+    for query_description in query_descriptions:
+        query_num = query_num + 1
+        do_logging("\nCurrent Query: " + query_description)
+        clkhs_avg_query_times = []
+        clkhs_avg_parse_times = []
+        clkhs_rows_returned_list = []
 
-                # Wait
-                time.sleep(random.randint(50, 61))
+        # Iterate over different limits
+        for num_rows in num_rows_list:
+            total_query_time = 0.0
+            total_parse_time = 0.0
+            rows_returned = 0
+            do_break = False
 
-                # Do the query and parsing
-                start_time = time.perf_counter()
-                result = client.execute_iter(clkhs_select_query_prefix + clkhs_select_query_midfix + str(num_rows) + ';', settings)
-                clkhs_UDR_list = []
-                for x in result:
-                    clkhs_UDR_list.append(x)
-                mid_time = time.perf_counter()
-                clkhs_UDR_df = pd.DataFrame(clkhs_UDR_list)
-                end_time = time.perf_counter()
+            # Iterate set number of times, for repetitions sake
+            i = 0
+            while (i < num_repetitions):
+                try:
+                    query_time = 0.0
+                    parse_time = 0.0
+                    settings = {'max_block_size': 5000}
 
-                # Get times
-                query_time = query_time + mid_time - start_time
-                parse_time = parse_time + end_time - mid_time
+                    # Do the query and parsing
+                    start_time = time.perf_counter()
+                    result = client.execute_iter(clkhs_select_query_prefix + clkhs_get_fuzzy_query(query_num) + str(num_rows) + ';', settings)
+                    clkhs_UDR_list = []
+                    for x in result:
+                        clkhs_UDR_list.append(x)
+                    mid_time = time.perf_counter()
+                    clkhs_UDR_df = pd.DataFrame(clkhs_UDR_list)
+                    end_time = time.perf_counter()
 
-                # Aggregate
-                total_query_time = total_query_time + query_time
-                total_parse_time = total_parse_time + parse_time
-                rows_returned = int(clkhs_UDR_df.size / num_cols)
+                    # Get times
+                    query_time = query_time + mid_time - start_time
+                    parse_time = parse_time + end_time - mid_time
 
-                do_logging('Iteration %d: %.2f' % (i, query_time + parse_time))
+                    # Aggregate
+                    total_query_time = total_query_time + query_time
+                    total_parse_time = total_parse_time + parse_time
+                    rows_returned = int(clkhs_UDR_df.size / num_cols)
 
-                # Break condition
-                if (num_rows > int(clkhs_UDR_df.size / num_cols)):
-                    do_break = True
-                
-                i = i + 1
+                    do_logging('Iteration %d: %.2f' % (i, query_time + parse_time))
 
-            except Exception as e:  # In case of an error, try try again
-                do_logging('Main thread encountered an exception:')
-                do_logging(e)
-                time.sleep(5)
-                do_logging('Main thread continuing')
-                continue
+                    # Break condition
+                    if (num_rows > int(clkhs_UDR_df.size / num_cols)):
+                        do_break = True
+                    
+                    i = i + 1
 
-        # Aggregate and add to list
-        avg_query_time = total_query_time / num_repetitions
-        avg_parse_time = total_parse_time / num_repetitions
-        clkhs_avg_query_times.append(avg_query_time)
-        clkhs_avg_parse_times.append(avg_parse_time)
-        clkhs_rows_returned_list.append(rows_returned)
+                except Exception as e:  # In case of an error, try try again
+                    do_logging('Main thread encountered an exception:')
+                    do_logging(e)
+                    time.sleep(5)
+                    do_logging('Main thread continuing')
+                    continue
 
-        # Logging
-        do_logging("\nResults for %d records averaged over %d repetitions:" % (num_rows, num_repetitions))
-        do_logging("Actual rows fetched: %d" % (int(clkhs_UDR_df.size / num_cols)))
-        do_logging("Time to execute select: %.2f seconds" % (avg_query_time))
-        do_logging("Time to put into dataframe: %.2f seconds" % (avg_parse_time))
-        do_logging("Total time: %.2f seconds" % (avg_parse_time + avg_query_time))
+            # Aggregate and add to list
+            avg_query_time = total_query_time / num_repetitions
+            avg_parse_time = total_parse_time / num_repetitions
+            clkhs_avg_query_times.append(avg_query_time)
+            clkhs_avg_parse_times.append(avg_parse_time)
+            clkhs_rows_returned_list.append(rows_returned)
 
-        if (do_break):
-            for j in range(0, len(num_rows_list) - len(clkhs_avg_query_times)):
-                clkhs_avg_query_times.append(0.0)
-                clkhs_avg_parse_times.append(0.0)
-                clkhs_rows_returned_list.append(0)
-            break
-    
-    # Add to lists
-    clkhs_query_timing_matrix.append(clkhs_avg_query_times)
-    clkhs_parse_timing_matrix.append(clkhs_avg_parse_times)
-    clkhs_rows_returned_matrix.append(clkhs_rows_returned_list)
+            # Logging
+            do_logging("\nResults for %d records averaged over %d repetitions with schema # " + str(schema_num) + ":" % (num_rows, num_repetitions))
+            do_logging("Actual rows fetched: %d" % (int(clkhs_UDR_df.size / num_cols)))
+            do_logging("Time to execute select: %.2f seconds" % (avg_query_time))
+            do_logging("Time to put into dataframe: %.2f seconds" % (avg_parse_time))
+            do_logging("Total time: %.2f seconds" % (avg_parse_time + avg_query_time))
+
+            if (do_break):
+                for j in range(0, len(num_rows_list) - len(clkhs_avg_query_times)):
+                    clkhs_avg_query_times.append(0.0)
+                    clkhs_avg_parse_times.append(0.0)
+                    clkhs_rows_returned_list.append(0)
+                break
         
-# Write to file
-csv_file.write(format_output("CH", query_descriptions, num_rows_list, clkhs_query_timing_matrix, clkhs_parse_timing_matrix, clkhs_rows_returned_matrix) + '\n')
+        # Add to lists
+        clkhs_json_query_timing_matrix.append(clkhs_avg_query_times)
+        clkhs_json_parse_timing_matrix.append(clkhs_avg_parse_times)
+        clkhs_json_rows_returned_matrix.append(clkhs_rows_returned_list)
+            
+    # Write to file
+    csv_file.write(format_output("CH(JSON)" if schema_num == 0 else "CH(NEW)", query_descriptions, num_rows_list, clkhs_json_query_timing_matrix, clkhs_json_parse_timing_matrix, clkhs_json_rows_returned_matrix) + '\n')
 
 # Clean up artifical load
 clkhs_stop_threads = True
 for thread in threads:
     thread.join()
+
+
+
 
 
 
@@ -394,14 +454,6 @@ from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 
 # Variables/constants
-cass_select_query_prefixes = ['SELECT * FROM "udr" LIMIT ', 
-    'SELECT * FROM "udr" WHERE partitionhash = -1 LIMIT ',
-    'SELECT * FROM "udr" WHERE carrierid = 18000 LIMIT ',
-    'SELECT * FROM "udr" WHERE fileid = 278 LIMIT ', 
-    'SELECT * FROM "udr" WHERE usagetypeid = 0 LIMIT ',
-    'SELECT * FROM "udr" WHERE partitionhash < 190512005 LIMIT ',
-    'SELECT * FROM "udr" WHERE subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ',
-    'SELECT * FROM "udr" WHERE partitionhash = 190512005 AND subscriptionid < 11400 AND subscriptionid > 11360 LIMIT ']
 cass_filtering_postfix = " ALLOW FILTERING"
 cass_UDR_df = pd.DataFrame()
 cass_page_size = 5000
@@ -409,6 +461,24 @@ cass_page_size = 5000
 # Functions
 def pandas_factory(colnames, rows):
     return pd.DataFrame(rows, columns=colnames)
+
+def cass_get_fuzzy_query(which):
+    prefix = 'SELECT * FROM "udr" '
+    if (which == 0):
+        return prefix + "LIMIT "
+    elif (which == 1):
+        return prefix + "WHERE partitionhash = " + str(random.randint(-1000, -1)) + " LIMIT "
+    elif (which == 2):
+        return prefix + "WHERE carrierid = " + str(random.randint(18000, 19000)) + " LIMIT "
+    elif (which == 3):
+        return prefix + "WHERE partitionhash <= " + str(random.randint(190512000, 190512039)) + " LIMIT "
+    elif (which == 4):
+        temp = random.randint(11111, 11211)
+        return prefix + "WHERE subscriptionid >= " + str(temp) + " AND subscriptionid <= " + str(random.randint(temp + 100, temp + 200)) + " LIMIT "
+    elif (which == 5):
+        temp = random.randint(11111, 11211)
+        partitionhash = random.randint(190512000, 190512039)
+        return prefix + "WHERE partitionhash = " + str(partitionhash) + " AND subscriptionid >= " + str(temp) + " AND subscriptionid <= " + str(random.randint(temp + 100, temp + 200)) + " LIMIT "
 
 # cassandra setup
 authentication = PlainTextAuthProvider(username='devadmin', password='Keys2TheK1ngd0m')
@@ -420,10 +490,11 @@ cass_rows_returned_matrix = []
 
 # Time the retrieval of various number of records for various queries
 # Iterate over the queries
-for cass_select_query_prefix in cass_select_query_prefixes:
-
+query_num = -1
+for query_description in query_descriptions:
+    query_num = query_num + 1
     # Per-query setup
-    do_logging("\nCurrent Query: " + cass_select_query_prefix)
+    do_logging("\nCurrent Query: " + query_description)
     cass_avg_query_times = []
     cass_avg_parse_times = []
     cass_rows_returned_list = []
@@ -457,12 +528,9 @@ for cass_select_query_prefix in cass_select_query_prefixes:
                 query_time = 0.0
                 parse_time = 0.0
 
-                # Wait
-                time.sleep(random.randint(50, 61))
-
                 # Do the initial query and parsing
                 start_time = time.perf_counter()
-                rows = session.execute(cass_select_query_prefix + str(num_rows) + cass_filtering_postfix + ';', timeout=None)
+                rows = session.execute(cass_get_fuzzy_query(query_num) + str(num_rows) + cass_filtering_postfix + ';', timeout=None)
                 mid_time = time.perf_counter()
                 cass_UDR_list = []
                 cass_UDR_list.extend(rows._current_rows.values.tolist())
