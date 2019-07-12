@@ -10,7 +10,7 @@ import random
 import threading
 
 # Global vars
-num_rows_list = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000]
+num_rows_list = [1, 10, 100, 1000, 10000, 100000, 1000000]
 num_cols = 42
 num_repetitions = 11
 output_file = "output.txt"
@@ -100,11 +100,13 @@ cass_table_definition = ("CREATE TABLE \"CassandraPractice\".udr_copy1 (\n" +
     "	'min_threshold' : 4\n" +
     "};")
 query_descriptions = ["Bulk Retrieval",
-    "Bulk Retreival: partitionhash = [-1000, -1]",
-    "Bulk Retreival: carrierid = [18000, 19000]",
-    "Bulk Retreival: partitionhash <= [190512000, 190512039]",
-    "Bulk Retreival: subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]",
-    "Bulk Retreival: partitionhash = [190512000, 190512039] AND subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]"]
+    "Bulk Retreival: partitionhash = [-1000 -1]",
+    "Bulk Retreival: carrierid = [18000 19000]",
+    "Bulk Retreival: partitionhash <= [190512000 190512039]",
+    "Bulk Retreival: subscriptionid >= [11111 11611] AND subscriptionid <= [11111 11611]",
+    "Bulk Retreival: partitionhash = [190512000 190512039] AND subscriptionid >= [11111 11611] AND subscriptionid <= [11111 11611]",
+    "Partition Key Lookup: partitionhash = [190512000 190512039]",
+    "Partition Key/Clustering Key Lookup: partitionhash = [190512000 190512039] AND hashcode = [...]"]
 
 # Global functions
 def do_logging(line):
@@ -329,6 +331,13 @@ def clkhs_get_fuzzy_query(which):
         temp = random.randint(11111, 11211)
         partitionhash = random.randint(190512000, 190512039)
         return "WHERE partitionhash = " + str(partitionhash) + " AND subscriptionid >= " + str(temp) + " AND subscriptionid <= " + str(random.randint(temp + 100, temp + 200)) + " \nLIMIT "
+    elif (which == 6):
+        return "WHERE partitionhash = " + str(random.randint(190512000, 190512039)) + " \nLIMIT "
+    elif (which == 7):
+        with open('hashcodes.txt') as f:
+            hashcode_list = f.readlines()
+        hashcode_list = [x.strip() for x in hashcode_list]
+        return "WHERE partitionhash = 190512000 AND hashcode = '" + str(hashcode_list[random.randint(0, len(hashcode_list) - 1)]) + "' \nLIMIT "
 
 # clkhs setup
 clk_settings = {'max_threads': 8, 'max_block_size': 5000}
@@ -347,7 +356,7 @@ for i in range(0, 4):
 schema_num = -1
 for clkhs_select_query_prefix in clkhs_select_query_prefixes:
     schema_num = schema_num + 1
-    do_logging('\n\nCurrent Schema: "CH(JSON)" if schema_num == 0 else "CH(NEW)')
+    do_logging('\n\nCurrent Schema: ' + ("CH(JSON)" if schema_num == 0 else "CH(NEW)"))
 
     clkhs_json_query_timing_matrix = []
     clkhs_json_parse_timing_matrix = []
@@ -485,6 +494,13 @@ def cass_get_fuzzy_query(which):
         temp = random.randint(11111, 11211)
         partitionhash = random.randint(190512000, 190512039)
         return prefix + "WHERE partitionhash = " + str(partitionhash) + " AND subscriptionid >= " + str(temp) + " AND subscriptionid <= " + str(random.randint(temp + 100, temp + 200)) + " LIMIT "
+    elif (which == 6):
+        return prefix + "WHERE partitionhash = " + str(random.randint(190512000, 190512039)) + " LIMIT "
+    elif (which == 7):
+        with open('hashcodes.txt') as f:
+            hashcode_list = f.readlines()
+        hashcode_list = [x.strip() for x in hashcode_list]
+        return prefix + "WHERE partitionhash = 190512000 AND hashcode = '" + str(hashcode_list[random.randint(0, len(hashcode_list) - 1)]) + "' LIMIT "
 
 # cassandra setup
 authentication = PlainTextAuthProvider(username='devadmin', password='Keys2TheK1ngd0m')
