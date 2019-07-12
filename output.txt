@@ -1,658 +1,267 @@
-2019-07-11 19:40:15.183526: Systems Information:
-2019-07-11 19:40:15.183924: 
-2019-07-11 19:40:15.183934: Clickhouse Instance: 192.168.5.60:9000
-2019-07-11 19:40:15.185438: 
-2019-07-11 19:40:15.185452: Cassandra Instance: dev-cassandra.ksg.int:9042
-2019-07-11 19:40:15.187033: 
-2019-07-11 19:40:15.187042: Clickhouse Table Definition:
-2019-07-11 19:40:15.187042: CREATE TABLE radius.udr_other ( CreateDate DateTime default now(), partitionhash UInt64,hashcode String,carrierid UInt64,subscriptionid UInt64,Message String ) ENGINE = MergeTree() PARTITION BY toYYYYMM(CreateDate) order by partitionhash
-2019-07-11 19:40:15.189575: 
-2019-07-11 19:40:15.189624: Cassandra Table Definition:
-2019-07-11 19:40:15.189624: CREATE TABLE "CassandraPractice".udr_copy1 (
-2019-07-11 19:40:15.189624: 	partitionhash int,
-2019-07-11 19:40:15.189624: 	hashcode text,
-2019-07-11 19:40:15.189624: 	accountnumber text,
-2019-07-11 19:40:15.189624: 	airtimeclass int,
-2019-07-11 19:40:15.189624: 	airtimeunits double,
-2019-07-11 19:40:15.189624: 	allocationcompletedate text,
-2019-07-11 19:40:15.189624: 	apn text,
-2019-07-11 19:40:15.189624: 	callednumber text,
-2019-07-11 19:40:15.189624: 	callingnumber text,
-2019-07-11 19:40:15.189624: 	carrierid int,
-2019-07-11 19:40:15.189624: 	cellid text,
-2019-07-11 19:40:15.189624: 	chargingid text,
-2019-07-11 19:40:15.189624: 	costcenterid int,
-2019-07-11 19:40:15.189624: 	downlinkvol bigint,
-2019-07-11 19:40:15.189624: 	duration double,
-2019-07-11 19:40:15.189624: 	exactusagedateonly date,
-2019-07-11 19:40:15.189624: 	exactusagetime text,
-2019-07-11 19:40:15.189624: 	fileid int,
-2019-07-11 19:40:15.189624: 	iccid text,
-2019-07-11 19:40:15.189624: 	imei text,
-2019-07-11 19:40:15.189624: 	imsi text,
-2019-07-11 19:40:15.189624: 	lineid bigint,
-2019-07-11 19:40:15.189624: 	linenumber int,
-2019-07-11 19:40:15.189624: 	mobilecountrycode text,
-2019-07-11 19:40:15.189624: 	mobilenetworkcode text,
-2019-07-11 19:40:15.189624: 	mobileoriginated boolean,
-2019-07-11 19:40:15.189624: 	msisdn text,
-2019-07-11 19:40:15.189624: 	network text,
-2019-07-11 19:40:15.189624: 	orgid int,
-2019-07-11 19:40:15.189624: 	orgurn text,
-2019-07-11 19:40:15.189624: 	plmn text,
-2019-07-11 19:40:15.189624: 	propertybag MAP<text, text>,
-2019-07-11 19:40:15.189624: 	recordtype text,
-2019-07-11 19:40:15.189624: 	roamingindicator text,
-2019-07-11 19:40:15.189624: 	roundingdate text,
-2019-07-11 19:40:15.189624: 	sender text,
-2019-07-11 19:40:15.189624: 	subscriptionid int,
-2019-07-11 19:40:15.189624: 	subscriptionurn text,
-2019-07-11 19:40:15.189624: 	surrecordtypeid int,
-2019-07-11 19:40:15.189624: 	tapcode text,
-2019-07-11 19:40:15.189624: 	uplinkvol bigint,
-2019-07-11 19:40:15.189624: 	usagetypeid int,
-2019-07-11 19:40:15.189624: 	PRIMARY KEY (partitionhash, hashcode)
-2019-07-11 19:40:15.189624: ) WITH bloom_filter_fp_chance = 0.01
-2019-07-11 19:40:15.189624: AND comment = ''
-2019-07-11 19:40:15.189624: AND crc_check_chance = 1.0
-2019-07-11 19:40:15.189624: AND dclocal_read_repair_chance = 0.1
-2019-07-11 19:40:15.189624: AND default_time_to_live = 0
-2019-07-11 19:40:15.189624: AND gc_grace_seconds = 864000
-2019-07-11 19:40:15.189624: AND max_index_interval = 2048
-2019-07-11 19:40:15.189624: AND memtable_flush_period_in_ms = 0
-2019-07-11 19:40:15.189624: AND min_index_interval = 128
-2019-07-11 19:40:15.189624: AND read_repair_chance = 0.0
-2019-07-11 19:40:15.189624: AND speculative_retry = '99.0PERCENTILE'
-2019-07-11 19:40:15.189624: AND caching = {
-2019-07-11 19:40:15.189624: 	'keys' : 'NONE',
-2019-07-11 19:40:15.189624: 	'rows_per_partition' : 'NONE'
-2019-07-11 19:40:15.189624: }
-2019-07-11 19:40:15.189624: AND compression = {
-2019-07-11 19:40:15.189624: 	'chunk_length_in_kb' : 64,
-2019-07-11 19:40:15.189624: 	'class' : 'LZ4Compressor',
-2019-07-11 19:40:15.189624: 	'enabled' : true
-2019-07-11 19:40:15.189624: }
-2019-07-11 19:40:15.189624: AND compaction = {
-2019-07-11 19:40:15.189624: 	'class' : 'SizeTieredCompactionStrategy',
-2019-07-11 19:40:15.189624: 	'max_threshold' : 32,
-2019-07-11 19:40:15.189624: 	'min_threshold' : 4
-2019-07-11 19:40:15.189624: };
-2019-07-11 19:40:15.235856: 
-2019-07-11 19:40:15.235891: 
-2019-07-11 19:40:15.236828: Beginning Clickhouse Test
-2019-07-11 19:40:15.286777: Thread 140130513585920 starting
-2019-07-11 19:40:15.287445: Thread 140130513585920 starting background query: select flowset_id,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by flowset_id order by connections desc limit 50
-2019-07-11 19:40:16.288645: Thread 140130555594496 starting
-2019-07-11 19:40:16.289629: Thread 140130555594496 starting background query: select out_src_mac,tcp_flags,out_src_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by out_src_mac,tcp_flags,out_src_mac order by connections desc limit 50
-2019-07-11 19:40:17.290566: Thread 140130564048640 starting
-2019-07-11 19:40:17.292230: Thread 140130564048640 starting background query: select tcp_flags,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags,icmp_type order by connections desc limit 50
-2019-07-11 19:40:18.292919: Thread 140130252359424 starting
-2019-07-11 19:40:18.294554: Thread 140130252359424 starting background query: select tcp_flags,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags order by connections desc limit 50
-2019-07-11 19:40:19.293709: Scheam number: 0
-2019-07-11 19:40:19.295279: 
-2019-07-11 19:40:19.295349: Current Query: Bulk Retrieval
-2019-07-11 19:40:19.353848: Iteration 0: 0.05
-2019-07-11 19:40:19.405958: Iteration 1: 0.05
-2019-07-11 19:40:19.444191: Iteration 2: 0.04
-2019-07-11 19:40:19.493369: Iteration 3: 0.05
-2019-07-11 19:40:19.547790: Iteration 4: 0.05
-2019-07-11 19:40:19.583655: Iteration 5: 0.04
-2019-07-11 19:40:19.652236: Iteration 6: 0.07
-2019-07-11 19:40:19.679716: Iteration 7: 0.03
-2019-07-11 19:40:19.730375: Iteration 8: 0.05
-2019-07-11 19:40:19.775985: Iteration 9: 0.04
-2019-07-11 19:40:19.836419: Iteration 10: 0.06
-2019-07-11 19:40:19.837405: 
-2019-07-11 19:40:19.837453: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:19.840121: Actual rows fetched: 5
-2019-07-11 19:40:19.841735: Time to execute select: 0.04 seconds
-2019-07-11 19:40:19.842807: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:19.843903: Total time: 0.05 seconds
-2019-07-11 19:40:19.873443: Iteration 0: 0.03
-2019-07-11 19:40:19.894108: Iteration 1: 0.02
-2019-07-11 19:40:19.916441: Iteration 2: 0.02
-2019-07-11 19:40:19.975989: Iteration 3: 0.06
-2019-07-11 19:40:20.046890: Iteration 4: 0.07
-2019-07-11 19:40:20.097080: Iteration 5: 0.05
-2019-07-11 19:40:20.117521: Iteration 6: 0.02
-2019-07-11 19:40:20.185181: Iteration 7: 0.07
-2019-07-11 19:40:20.276693: Iteration 8: 0.09
-2019-07-11 19:40:20.329165: Iteration 9: 0.05
-2019-07-11 19:40:20.372310: Iteration 10: 0.04
-2019-07-11 19:40:20.372899: 
-2019-07-11 19:40:20.372913: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:20.374900: Actual rows fetched: 10
-2019-07-11 19:40:20.375636: Time to execute select: 0.04 seconds
-2019-07-11 19:40:20.376400: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:20.377149: Total time: 0.05 seconds
-2019-07-11 19:40:20.377927: 
-2019-07-11 19:40:20.377937: Current Query: Bulk Retreival: partitionhash = [-1000, -1]
-2019-07-11 19:40:22.277072: Iteration 0: 1.90
-2019-07-11 19:40:24.088911: Iteration 1: 1.81
-2019-07-11 19:40:26.007145: Iteration 2: 1.92
-2019-07-11 19:40:27.871565: Iteration 3: 1.86
-2019-07-11 19:40:29.717246: Iteration 4: 1.84
-2019-07-11 19:40:31.522336: Iteration 5: 1.80
-2019-07-11 19:40:33.410374: Iteration 6: 1.89
-2019-07-11 19:40:35.250682: Iteration 7: 1.84
-2019-07-11 19:40:37.101792: Iteration 8: 1.85
-2019-07-11 19:40:38.971473: Iteration 9: 1.87
-2019-07-11 19:40:40.756544: Iteration 10: 1.78
-2019-07-11 19:40:40.757207: 
-2019-07-11 19:40:40.757218: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:40.758823: Actual rows fetched: 0
-2019-07-11 19:40:40.759517: Time to execute select: 1.85 seconds
-2019-07-11 19:40:40.760232: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:40:40.760944: Total time: 1.85 seconds
-2019-07-11 19:40:40.761663: 
-2019-07-11 19:40:40.761676: Current Query: Bulk Retreival: carrierid = [18000, 19000]
-2019-07-11 19:40:40.871472: Iteration 0: 0.11
-2019-07-11 19:40:40.973944: Iteration 1: 0.10
-2019-07-11 19:40:41.095343: Iteration 2: 0.12
-2019-07-11 19:40:41.252054: Iteration 3: 0.16
-2019-07-11 19:40:41.458810: Iteration 4: 0.21
-2019-07-11 19:40:41.563425: Iteration 5: 0.10
-2019-07-11 19:40:41.663091: Iteration 6: 0.10
-2019-07-11 19:40:41.765033: Iteration 7: 0.10
-2019-07-11 19:40:41.936293: Iteration 8: 0.17
-2019-07-11 19:40:42.053340: Iteration 9: 0.12
-2019-07-11 19:40:42.204513: Iteration 10: 0.15
-2019-07-11 19:40:42.205119: 
-2019-07-11 19:40:42.205137: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:42.206632: Actual rows fetched: 5
-2019-07-11 19:40:42.207351: Time to execute select: 0.12 seconds
-2019-07-11 19:40:42.208122: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:42.208866: Total time: 0.13 seconds
-2019-07-11 19:40:42.318370: Iteration 0: 0.11
-2019-07-11 19:40:42.471281: Iteration 1: 0.15
-2019-07-11 19:40:42.573151: Iteration 2: 0.10
-2019-07-11 19:40:42.688987: Iteration 3: 0.11
-2019-07-11 19:40:42.816973: Iteration 4: 0.13
-2019-07-11 19:40:42.964390: Iteration 5: 0.15
-2019-07-11 19:40:43.111150: Iteration 6: 0.15
-2019-07-11 19:40:43.230510: Iteration 7: 0.12
-2019-07-11 19:40:43.380864: Iteration 8: 0.15
-2019-07-11 19:40:43.527377: Iteration 9: 0.15
-2019-07-11 19:40:43.678049: Iteration 10: 0.15
-2019-07-11 19:40:43.678935: 
-2019-07-11 19:40:43.678962: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:43.681292: Actual rows fetched: 10
-2019-07-11 19:40:43.682386: Time to execute select: 0.12 seconds
-2019-07-11 19:40:43.683555: Time to put into dataframe: 0.02 seconds
-2019-07-11 19:40:43.684528: Total time: 0.13 seconds
-2019-07-11 19:40:43.685497: 
-2019-07-11 19:40:43.685520: Current Query: Bulk Retreival: partitionhash <= [190512000, 190512039]
-2019-07-11 19:40:43.786788: Iteration 0: 0.10
-2019-07-11 19:40:43.933947: Iteration 1: 0.15
-2019-07-11 19:40:44.057179: Iteration 2: 0.12
-2019-07-11 19:40:44.249098: Iteration 3: 0.19
-2019-07-11 19:40:44.456647: Iteration 4: 0.21
-2019-07-11 19:40:44.588386: Iteration 5: 0.13
-2019-07-11 19:40:44.803069: Iteration 6: 0.21
-2019-07-11 19:40:44.945903: Iteration 7: 0.14
-2019-07-11 19:40:45.109999: Iteration 8: 0.16
-2019-07-11 19:40:45.324376: Iteration 9: 0.21
-2019-07-11 19:40:45.567696: Iteration 10: 0.24
-2019-07-11 19:40:45.568634: 
-2019-07-11 19:40:45.568661: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:45.571013: Actual rows fetched: 5
-2019-07-11 19:40:45.572016: Time to execute select: 0.16 seconds
-2019-07-11 19:40:45.573290: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:45.574281: Total time: 0.17 seconds
-2019-07-11 19:40:45.709540: Iteration 0: 0.13
-2019-07-11 19:40:45.822779: Iteration 1: 0.11
-2019-07-11 19:40:45.997319: Iteration 2: 0.17
-2019-07-11 19:40:46.096188: Iteration 3: 0.10
-2019-07-11 19:40:46.300965: Iteration 4: 0.20
-2019-07-11 19:40:46.423065: Iteration 5: 0.12
-2019-07-11 19:40:46.526704: Iteration 6: 0.10
-2019-07-11 19:40:46.669755: Iteration 7: 0.14
-2019-07-11 19:40:46.804149: Iteration 8: 0.13
-2019-07-11 19:40:46.993528: Iteration 9: 0.19
-2019-07-11 19:40:47.088999: Iteration 10: 0.09
-2019-07-11 19:40:47.089528: 
-2019-07-11 19:40:47.089551: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:47.091443: Actual rows fetched: 10
-2019-07-11 19:40:47.092014: Time to execute select: 0.12 seconds
-2019-07-11 19:40:47.092696: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:47.093303: Total time: 0.14 seconds
-2019-07-11 19:40:47.093980: 
-2019-07-11 19:40:47.093992: Current Query: Bulk Retreival: subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]
-2019-07-11 19:40:47.224083: Iteration 0: 0.13
-2019-07-11 19:40:47.332809: Iteration 1: 0.11
-2019-07-11 19:40:47.443151: Iteration 2: 0.11
-2019-07-11 19:40:47.596248: Iteration 3: 0.15
-2019-07-11 19:40:47.721978: Iteration 4: 0.12
-2019-07-11 19:40:47.833746: Iteration 5: 0.11
-2019-07-11 19:40:47.972332: Iteration 6: 0.14
-2019-07-11 19:40:48.062381: Iteration 7: 0.09
-2019-07-11 19:40:48.190748: Iteration 8: 0.13
-2019-07-11 19:40:48.298625: Iteration 9: 0.11
-2019-07-11 19:40:48.506468: Iteration 10: 0.21
-2019-07-11 19:40:48.507225: 
-2019-07-11 19:40:48.507241: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:48.509049: Actual rows fetched: 5
-2019-07-11 19:40:48.509903: Time to execute select: 0.11 seconds
-2019-07-11 19:40:48.510950: Time to put into dataframe: 0.02 seconds
-2019-07-11 19:40:48.511840: Total time: 0.13 seconds
-2019-07-11 19:40:48.584894: Iteration 0: 0.07
-2019-07-11 19:40:48.719885: Iteration 1: 0.13
-2019-07-11 19:40:48.842062: Iteration 2: 0.12
-2019-07-11 19:40:49.004193: Iteration 3: 0.16
-2019-07-11 19:40:49.163855: Iteration 4: 0.16
-2019-07-11 19:40:49.243433: Iteration 5: 0.08
-2019-07-11 19:40:49.371758: Iteration 6: 0.13
-2019-07-11 19:40:49.501283: Iteration 7: 0.13
-2019-07-11 19:40:49.636493: Iteration 8: 0.13
-2019-07-11 19:40:49.770560: Iteration 9: 0.13
-2019-07-11 19:40:49.872851: Iteration 10: 0.10
-2019-07-11 19:40:49.873951: 
-2019-07-11 19:40:49.873976: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:49.876521: Actual rows fetched: 10
-2019-07-11 19:40:49.877569: Time to execute select: 0.11 seconds
-2019-07-11 19:40:49.878648: Time to put into dataframe: 0.02 seconds
-2019-07-11 19:40:49.879582: Total time: 0.12 seconds
-2019-07-11 19:40:49.880523: 
-2019-07-11 19:40:49.880541: Current Query: Bulk Retreival: partitionhash = [190512000, 190512039] AND subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]
-2019-07-11 19:40:50.084110: Iteration 0: 0.20
-2019-07-11 19:40:50.482924: Iteration 1: 0.40
-2019-07-11 19:40:50.644024: Iteration 2: 0.16
-2019-07-11 19:40:50.808065: Iteration 3: 0.16
-2019-07-11 19:40:50.996400: Iteration 4: 0.19
-2019-07-11 19:40:51.130180: Iteration 5: 0.13
-2019-07-11 19:40:51.209370: Iteration 6: 0.08
-2019-07-11 19:40:51.481328: Iteration 7: 0.27
-2019-07-11 19:40:52.475137: Iteration 8: 0.99
-2019-07-11 19:40:53.331354: Iteration 9: 0.86
-2019-07-11 19:40:53.462247: Iteration 10: 0.13
-2019-07-11 19:40:53.462777: 
-2019-07-11 19:40:53.462792: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:53.464177: Actual rows fetched: 5
-2019-07-11 19:40:53.465225: Time to execute select: 0.32 seconds
-2019-07-11 19:40:53.466079: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:53.466692: Total time: 0.32 seconds
-2019-07-11 19:40:53.609448: Iteration 0: 0.14
-2019-07-11 19:40:53.943430: Iteration 1: 0.33
-2019-07-11 19:40:54.155468: Iteration 2: 0.21
-2019-07-11 19:40:55.019425: Iteration 3: 0.86
-2019-07-11 19:40:55.119812: Iteration 4: 0.10
-2019-07-11 19:40:55.238214: Iteration 5: 0.12
-2019-07-11 19:40:55.373876: Iteration 6: 0.14
-2019-07-11 19:40:55.924442: Iteration 7: 0.55
-2019-07-11 19:40:56.037856: Iteration 8: 0.11
-2019-07-11 19:40:56.204435: Iteration 9: 0.16
-2019-07-11 19:40:56.337693: Iteration 10: 0.13
-2019-07-11 19:40:56.338355: 
-2019-07-11 19:40:56.338374: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:56.339708: Actual rows fetched: 10
-2019-07-11 19:40:56.340957: Time to execute select: 0.25 seconds
-2019-07-11 19:40:56.341587: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:56.342273: Total time: 0.26 seconds
-2019-07-11 19:40:56.343370: Scheam number: 1
-2019-07-11 19:40:56.343543: 
-2019-07-11 19:40:56.343555: Current Query: Bulk Retrieval
-2019-07-11 19:40:56.405539: Iteration 0: 0.06
-2019-07-11 19:40:56.504629: Iteration 1: 0.10
-2019-07-11 19:40:56.525816: Iteration 2: 0.02
-2019-07-11 19:40:56.591134: Iteration 3: 0.06
-2019-07-11 19:40:56.633385: Iteration 4: 0.04
-2019-07-11 19:40:56.673561: Iteration 5: 0.04
-2019-07-11 19:40:56.738794: Iteration 6: 0.06
-2019-07-11 19:40:56.788706: Iteration 7: 0.05
-2019-07-11 19:40:56.848541: Iteration 8: 0.06
-2019-07-11 19:40:56.949204: Iteration 9: 0.10
-2019-07-11 19:40:56.986147: Iteration 10: 0.04
-2019-07-11 19:40:56.986840: 
-2019-07-11 19:40:56.986855: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:56.988620: Actual rows fetched: 5
-2019-07-11 19:40:56.989282: Time to execute select: 0.05 seconds
-2019-07-11 19:40:56.989915: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:56.990554: Total time: 0.06 seconds
-2019-07-11 19:40:57.015723: Iteration 0: 0.02
-2019-07-11 19:40:57.066633: Iteration 1: 0.05
-2019-07-11 19:40:57.108218: Iteration 2: 0.04
-2019-07-11 19:40:57.176654: Iteration 3: 0.07
-2019-07-11 19:40:57.206457: Iteration 4: 0.03
-2019-07-11 19:40:57.299298: Iteration 5: 0.09
-2019-07-11 19:40:57.341903: Iteration 6: 0.04
-2019-07-11 19:40:57.363534: Iteration 7: 0.02
-2019-07-11 19:40:57.446513: Iteration 8: 0.08
-2019-07-11 19:40:57.516825: Iteration 9: 0.07
-2019-07-11 19:40:57.544457: Iteration 10: 0.03
-2019-07-11 19:40:57.545027: 
-2019-07-11 19:40:57.545044: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:57.547852: Actual rows fetched: 10
-2019-07-11 19:40:57.548743: Time to execute select: 0.04 seconds
-2019-07-11 19:40:57.549631: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:57.550566: Total time: 0.05 seconds
-2019-07-11 19:40:57.551504: 
-2019-07-11 19:40:57.551517: Current Query: Bulk Retreival: partitionhash = [-1000, -1]
-2019-07-11 19:40:57.587529: Iteration 0: 0.03
-2019-07-11 19:40:57.613252: Iteration 1: 0.02
-2019-07-11 19:40:57.644892: Iteration 2: 0.03
-2019-07-11 19:40:57.688694: Iteration 3: 0.04
-2019-07-11 19:40:57.729390: Iteration 4: 0.04
-2019-07-11 19:40:57.747851: Iteration 5: 0.02
-2019-07-11 19:40:57.778297: Iteration 6: 0.03
-2019-07-11 19:40:57.810109: Iteration 7: 0.03
-2019-07-11 19:40:57.874246: Iteration 8: 0.06
-2019-07-11 19:40:57.910962: Iteration 9: 0.03
-2019-07-11 19:40:57.952454: Iteration 10: 0.04
-2019-07-11 19:40:57.952941: 
-2019-07-11 19:40:57.952961: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:57.954814: Actual rows fetched: 0
-2019-07-11 19:40:57.955361: Time to execute select: 0.03 seconds
-2019-07-11 19:40:57.955987: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:40:57.956604: Total time: 0.04 seconds
-2019-07-11 19:40:57.957293: 
-2019-07-11 19:40:57.957407: Current Query: Bulk Retreival: carrierid = [18000, 19000]
-2019-07-11 19:40:58.034921: Iteration 0: 0.08
-2019-07-11 19:40:58.110702: Iteration 1: 0.07
-2019-07-11 19:40:58.195020: Iteration 2: 0.08
-2019-07-11 19:40:58.303251: Iteration 3: 0.11
-2019-07-11 19:40:58.374891: Iteration 4: 0.07
-2019-07-11 19:40:58.450777: Iteration 5: 0.07
-2019-07-11 19:40:58.521617: Iteration 6: 0.07
-2019-07-11 19:40:58.588062: Iteration 7: 0.07
-2019-07-11 19:40:58.644208: Iteration 8: 0.06
-2019-07-11 19:40:58.703241: Iteration 9: 0.06
-2019-07-11 19:40:58.756644: Iteration 10: 0.05
-2019-07-11 19:40:58.757298: 
-2019-07-11 19:40:58.757310: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:40:58.758714: Actual rows fetched: 0
-2019-07-11 19:40:58.759448: Time to execute select: 0.06 seconds
-2019-07-11 19:40:58.760038: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:40:58.760745: Total time: 0.07 seconds
-2019-07-11 19:40:58.761483: 
-2019-07-11 19:40:58.761495: Current Query: Bulk Retreival: partitionhash <= [190512000, 190512039]
-2019-07-11 19:40:58.908247: Iteration 0: 0.14
-2019-07-11 19:40:59.052121: Iteration 1: 0.14
-2019-07-11 19:40:59.180607: Iteration 2: 0.13
-2019-07-11 19:40:59.350330: Iteration 3: 0.17
-2019-07-11 19:40:59.491303: Iteration 4: 0.14
-2019-07-11 19:40:59.622461: Iteration 5: 0.13
-2019-07-11 19:40:59.741280: Iteration 6: 0.12
-2019-07-11 19:40:59.911294: Iteration 7: 0.17
-2019-07-11 19:41:00.043192: Iteration 8: 0.13
-2019-07-11 19:41:00.232065: Iteration 9: 0.19
-2019-07-11 19:41:00.381888: Iteration 10: 0.15
-2019-07-11 19:41:00.382413: 
-2019-07-11 19:41:00.382428: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:41:00.384311: Actual rows fetched: 5
-2019-07-11 19:41:00.385105: Time to execute select: 0.14 seconds
-2019-07-11 19:41:00.386346: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:41:00.387528: Total time: 0.15 seconds
-2019-07-11 19:41:00.505982: Iteration 0: 0.12
-2019-07-11 19:41:00.644221: Iteration 1: 0.14
-2019-07-11 19:41:00.773077: Iteration 2: 0.13
-2019-07-11 19:41:00.917800: Iteration 3: 0.14
-2019-07-11 19:41:01.060257: Iteration 4: 0.14
-2019-07-11 19:41:01.202178: Iteration 5: 0.14
-2019-07-11 19:41:01.348923: Iteration 6: 0.15
-2019-07-11 19:41:01.514647: Iteration 7: 0.16
-2019-07-11 19:41:01.743122: Iteration 8: 0.23
-2019-07-11 19:41:01.940029: Iteration 9: 0.20
-2019-07-11 19:41:02.097366: Iteration 10: 0.16
-2019-07-11 19:41:02.098420: 
-2019-07-11 19:41:02.098458: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:41:02.101340: Actual rows fetched: 10
-2019-07-11 19:41:02.102787: Time to execute select: 0.14 seconds
-2019-07-11 19:41:02.104374: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:41:02.105399: Total time: 0.15 seconds
-2019-07-11 19:41:02.106529: 
-2019-07-11 19:41:02.106548: Current Query: Bulk Retreival: subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]
-2019-07-11 19:41:02.267832: Iteration 0: 0.16
-2019-07-11 19:41:02.411571: Iteration 1: 0.14
-2019-07-11 19:41:02.524668: Iteration 2: 0.11
-2019-07-11 19:41:02.660819: Iteration 3: 0.14
-2019-07-11 19:41:02.796065: Iteration 4: 0.13
-2019-07-11 19:41:02.964471: Iteration 5: 0.17
-2019-07-11 19:41:03.110879: Iteration 6: 0.15
-2019-07-11 19:41:03.281817: Iteration 7: 0.17
-2019-07-11 19:41:03.502165: Iteration 8: 0.22
-2019-07-11 19:41:03.632367: Iteration 9: 0.13
-2019-07-11 19:41:03.769415: Iteration 10: 0.14
-2019-07-11 19:41:03.770022: 
-2019-07-11 19:41:03.770035: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:41:03.771891: Actual rows fetched: 5
-2019-07-11 19:41:03.772583: Time to execute select: 0.14 seconds
-2019-07-11 19:41:03.773401: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:41:03.774206: Total time: 0.15 seconds
-2019-07-11 19:41:03.966778: Iteration 0: 0.19
-2019-07-11 19:41:04.176980: Iteration 1: 0.21
-2019-07-11 19:41:04.348934: Iteration 2: 0.17
-2019-07-11 19:41:04.517518: Iteration 3: 0.17
-2019-07-11 19:41:04.620441: Iteration 4: 0.10
-2019-07-11 19:41:04.781081: Iteration 5: 0.16
-2019-07-11 19:41:04.939068: Iteration 6: 0.16
-2019-07-11 19:41:05.080658: Iteration 7: 0.14
-2019-07-11 19:41:05.275299: Iteration 8: 0.19
-2019-07-11 19:41:05.412299: Iteration 9: 0.14
-2019-07-11 19:41:05.511371: Iteration 10: 0.10
-2019-07-11 19:41:05.511961: 
-2019-07-11 19:41:05.511974: Results for 10 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:41:05.513516: Actual rows fetched: 10
-2019-07-11 19:41:05.514051: Time to execute select: 0.14 seconds
-2019-07-11 19:41:05.514570: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:41:05.515138: Total time: 0.16 seconds
-2019-07-11 19:41:05.515740: 
-2019-07-11 19:41:05.515753: Current Query: Bulk Retreival: partitionhash = [190512000, 190512039] AND subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]
-2019-07-11 19:41:05.543665: Iteration 0: 0.03
-2019-07-11 19:41:05.613568: Iteration 1: 0.07
-2019-07-11 19:41:05.691552: Iteration 2: 0.08
-2019-07-11 19:41:05.757239: Iteration 3: 0.06
-2019-07-11 19:41:05.834923: Iteration 4: 0.08
-2019-07-11 19:41:05.888224: Iteration 5: 0.05
-2019-07-11 19:41:05.931650: Iteration 6: 0.04
-2019-07-11 19:41:05.982308: Iteration 7: 0.05
-2019-07-11 19:41:06.030162: Iteration 8: 0.05
-2019-07-11 19:41:06.105669: Iteration 9: 0.07
-2019-07-11 19:41:06.141299: Iteration 10: 0.03
-2019-07-11 19:41:06.142096: 
-2019-07-11 19:41:06.142111: Results for 5 records averaged over 11 repetitions with the JSON schema:
-2019-07-11 19:41:06.144456: Actual rows fetched: 0
-2019-07-11 19:41:06.145567: Time to execute select: 0.05 seconds
-2019-07-11 19:41:06.146636: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:41:06.147564: Total time: 0.06 seconds
-2019-07-11 19:42:03.221584: 
-2019-07-11 19:42:03.221647: 
-2019-07-11 19:42:03.221647: Beginning Cassandra Test
-2019-07-11 19:42:03.409687: 
-2019-07-11 19:42:03.409702: Current Query: Bulk Retrieval
-2019-07-11 19:42:04.410227: Iteration 0: 0.05
-2019-07-11 19:42:04.439342: Iteration 1: 0.03
-2019-07-11 19:42:04.460593: Iteration 2: 0.02
-2019-07-11 19:42:04.488784: Iteration 3: 0.03
-2019-07-11 19:42:04.507650: Iteration 4: 0.02
-2019-07-11 19:42:04.533049: Iteration 5: 0.02
-2019-07-11 19:42:04.552158: Iteration 6: 0.02
-2019-07-11 19:42:04.575568: Iteration 7: 0.02
-2019-07-11 19:42:04.595040: Iteration 8: 0.02
-2019-07-11 19:42:04.614438: Iteration 9: 0.02
-2019-07-11 19:42:04.636851: Iteration 10: 0.02
-2019-07-11 19:42:04.637346: 
-2019-07-11 19:42:04.637360: Results for 5 records averaged over 11 repetitions:
-2019-07-11 19:42:04.638800: Actual rows fetched: 5
-2019-07-11 19:42:04.639525: Time to execute select: 0.02 seconds
-2019-07-11 19:42:04.640181: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:04.640815: Total time: 0.02 seconds
-2019-07-11 19:42:04.780779: Iteration 0: 0.02
-2019-07-11 19:42:04.803165: Iteration 1: 0.02
-2019-07-11 19:42:04.827323: Iteration 2: 0.02
-2019-07-11 19:42:04.854096: Iteration 3: 0.03
-2019-07-11 19:42:04.877731: Iteration 4: 0.02
-2019-07-11 19:42:04.902329: Iteration 5: 0.02
-2019-07-11 19:42:04.924574: Iteration 6: 0.02
-2019-07-11 19:42:04.943550: Iteration 7: 0.02
-2019-07-11 19:42:04.961448: Iteration 8: 0.02
-2019-07-11 19:42:04.987029: Iteration 9: 0.03
-2019-07-11 19:42:05.007165: Iteration 10: 0.02
-2019-07-11 19:42:05.007610: 
-2019-07-11 19:42:05.007628: Results for 10 records averaged over 11 repetitions:
-2019-07-11 19:42:05.009106: Actual rows fetched: 10
-2019-07-11 19:42:05.009936: Time to execute select: 0.02 seconds
-2019-07-11 19:42:05.010590: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:05.011225: Total time: 0.02 seconds
-2019-07-11 19:42:05.012130: 
-2019-07-11 19:42:05.012143: Current Query: Bulk Retreival: partitionhash = [-1000, -1]
-2019-07-11 19:42:05.183228: Iteration 0: 0.04
-2019-07-11 19:42:05.196631: Iteration 1: 0.01
-2019-07-11 19:42:05.214847: Iteration 2: 0.02
-2019-07-11 19:42:05.229027: Iteration 3: 0.01
-2019-07-11 19:42:05.243529: Iteration 4: 0.01
-2019-07-11 19:42:05.256232: Iteration 5: 0.01
-2019-07-11 19:42:05.268165: Iteration 6: 0.01
-2019-07-11 19:42:05.282126: Iteration 7: 0.01
-2019-07-11 19:42:05.294505: Iteration 8: 0.01
-2019-07-11 19:42:05.306723: Iteration 9: 0.01
-2019-07-11 19:42:05.319087: Iteration 10: 0.01
-2019-07-11 19:42:05.319597: 
-2019-07-11 19:42:05.319608: Results for 5 records averaged over 11 repetitions:
-2019-07-11 19:42:05.321471: Actual rows fetched: 0
-2019-07-11 19:42:05.322258: Time to execute select: 0.02 seconds
-2019-07-11 19:42:05.323000: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:05.323774: Total time: 0.02 seconds
-2019-07-11 19:42:05.324541: 
-2019-07-11 19:42:05.324555: Current Query: Bulk Retreival: carrierid = [18000, 19000]
-2019-07-11 19:42:05.595620: Iteration 0: 0.15
-2019-07-11 19:42:06.176813: Iteration 1: 0.58
-2019-07-11 19:42:06.641016: Iteration 2: 0.46
-2019-07-11 19:42:07.267244: Iteration 3: 0.63
-2019-07-11 19:42:08.042621: Iteration 4: 0.77
-2019-07-11 19:42:08.502608: Iteration 5: 0.46
-2019-07-11 19:42:08.988473: Iteration 6: 0.49
-2019-07-11 19:42:09.583258: Iteration 7: 0.59
-2019-07-11 19:42:10.267916: Iteration 8: 0.68
-2019-07-11 19:42:11.307885: Iteration 9: 1.04
-2019-07-11 19:42:11.740776: Iteration 10: 0.43
-2019-07-11 19:42:11.741433: 
-2019-07-11 19:42:11.741460: Results for 5 records averaged over 11 repetitions:
-2019-07-11 19:42:11.742746: Actual rows fetched: 5
-2019-07-11 19:42:11.743302: Time to execute select: 0.57 seconds
-2019-07-11 19:42:11.743827: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:11.744416: Total time: 0.57 seconds
-2019-07-11 19:42:12.558133: Iteration 0: 0.13
-2019-07-11 19:42:13.045060: Iteration 1: 0.49
-2019-07-11 19:42:13.879900: Iteration 2: 0.83
-2019-07-11 19:42:14.425700: Iteration 3: 0.55
-2019-07-11 19:42:15.151447: Iteration 4: 0.73
-2019-07-11 19:42:15.844860: Iteration 5: 0.69
-2019-07-11 19:42:16.737597: Iteration 6: 0.89
-2019-07-11 19:42:17.379287: Iteration 7: 0.64
-2019-07-11 19:42:18.085909: Iteration 8: 0.71
-2019-07-11 19:42:18.803413: Iteration 9: 0.72
-2019-07-11 19:42:19.546590: Iteration 10: 0.74
-2019-07-11 19:42:19.547231: 
-2019-07-11 19:42:19.547244: Results for 10 records averaged over 11 repetitions:
-2019-07-11 19:42:19.548689: Actual rows fetched: 10
-2019-07-11 19:42:19.549352: Time to execute select: 0.64 seconds
-2019-07-11 19:42:19.550044: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:19.550724: Total time: 0.65 seconds
-2019-07-11 19:42:19.551618: 
-2019-07-11 19:42:19.551629: Current Query: Bulk Retreival: partitionhash <= [190512000, 190512039]
-2019-07-11 19:42:20.378188: Iteration 0: 0.03
-2019-07-11 19:42:20.395856: Iteration 1: 0.02
-2019-07-11 19:42:20.419900: Iteration 2: 0.02
-2019-07-11 19:42:20.438691: Iteration 3: 0.02
-2019-07-11 19:42:20.461385: Iteration 4: 0.02
-2019-07-11 19:42:20.481636: Iteration 5: 0.02
-2019-07-11 19:42:20.503656: Iteration 6: 0.02
-2019-07-11 19:42:20.521795: Iteration 7: 0.02
-2019-07-11 19:42:20.546206: Iteration 8: 0.02
-2019-07-11 19:42:20.565530: Iteration 9: 0.02
-2019-07-11 19:42:20.591386: Iteration 10: 0.03
-2019-07-11 19:42:20.591958: 
-2019-07-11 19:42:20.591971: Results for 5 records averaged over 11 repetitions:
-2019-07-11 19:42:20.594146: Actual rows fetched: 5
-2019-07-11 19:42:20.594922: Time to execute select: 0.02 seconds
-2019-07-11 19:42:20.595769: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:20.596551: Total time: 0.02 seconds
-2019-07-11 19:42:20.761409: Iteration 0: 0.03
-2019-07-11 19:42:20.783760: Iteration 1: 0.02
-2019-07-11 19:42:20.802013: Iteration 2: 0.02
-2019-07-11 19:42:20.822859: Iteration 3: 0.02
-2019-07-11 19:42:20.842679: Iteration 4: 0.02
-2019-07-11 19:42:20.864852: Iteration 5: 0.02
-2019-07-11 19:42:20.884316: Iteration 6: 0.02
-2019-07-11 19:42:20.907848: Iteration 7: 0.02
-2019-07-11 19:42:20.928973: Iteration 8: 0.02
-2019-07-11 19:42:20.950814: Iteration 9: 0.02
-2019-07-11 19:42:20.968397: Iteration 10: 0.02
-2019-07-11 19:42:20.968994: 
-2019-07-11 19:42:20.969008: Results for 10 records averaged over 11 repetitions:
-2019-07-11 19:42:20.970278: Actual rows fetched: 10
-2019-07-11 19:42:20.970893: Time to execute select: 0.02 seconds
-2019-07-11 19:42:20.971572: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:20.972181: Total time: 0.02 seconds
-2019-07-11 19:42:20.973226: 
-2019-07-11 19:42:20.973239: Current Query: Bulk Retreival: subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]
-2019-07-11 19:42:26.770514: Iteration 0: 5.67
-2019-07-11 19:42:29.109026: Iteration 1: 2.34
-2019-07-11 19:42:30.079180: Iteration 2: 0.97
-2019-07-11 19:42:34.641000: Iteration 3: 4.53
-2019-07-11 19:42:36.183486: Iteration 4: 1.54
-2019-07-11 19:42:39.563294: Iteration 5: 3.38
-2019-07-11 19:42:42.288699: Iteration 6: 2.72
-2019-07-11 19:42:45.129013: Iteration 7: 2.84
-2019-07-11 19:42:45.396146: Iteration 8: 0.27
-2019-07-11 19:42:51.017125: Iteration 9: 5.62
-2019-07-11 19:42:56.708512: Iteration 10: 5.69
-2019-07-11 19:42:56.709188: 
-2019-07-11 19:42:56.709206: Results for 5 records averaged over 11 repetitions:
-2019-07-11 19:42:56.711210: Actual rows fetched: 5
-2019-07-11 19:42:56.712077: Time to execute select: 3.23 seconds
-2019-07-11 19:42:56.713054: Time to put into dataframe: 0.00 seconds
-2019-07-11 19:42:56.713958: Total time: 3.23 seconds
-2019-07-11 19:42:57.324794: Iteration 0: 0.48
-2019-07-11 19:43:01.916075: Iteration 1: 4.59
-2019-07-11 19:43:05.736310: Iteration 2: 3.82
-2019-07-11 19:43:06.182282: Iteration 3: 0.45
-2019-07-11 19:43:07.177644: Iteration 4: 0.99
-2019-07-11 19:43:08.241164: Iteration 5: 1.06
-2019-07-11 19:43:09.293195: Iteration 6: 1.05
-2019-07-11 19:43:14.220451: Iteration 7: 4.93
-2019-07-11 19:43:18.222337: Iteration 8: 4.00
-2019-07-11 19:43:23.796117: Iteration 9: 5.57
-2019-07-11 19:43:26.155768: Iteration 10: 2.36
-2019-07-11 19:43:26.156442: 
-2019-07-11 19:43:26.156522: Results for 10 records averaged over 11 repetitions:
-2019-07-11 19:43:26.158324: Actual rows fetched: 10
-2019-07-11 19:43:26.159054: Time to execute select: 2.66 seconds
-2019-07-11 19:43:26.160723: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:43:26.161298: Total time: 2.66 seconds
-2019-07-11 19:43:26.162426: 
-2019-07-11 19:43:26.162451: Current Query: Bulk Retreival: partitionhash = [190512000, 190512039] AND subscriptionid >= [11111, 11611] AND subscriptionid <= [11111, 11611]
-2019-07-11 19:43:27.020817: Iteration 0: 0.74
-2019-07-11 19:43:27.687609: Iteration 1: 0.67
-2019-07-11 19:43:28.353854: Iteration 2: 0.67
-2019-07-11 19:43:28.992678: Iteration 3: 0.64
-2019-07-11 19:43:29.038565: Iteration 4: 0.05
-2019-07-11 19:43:29.440537: Iteration 5: 0.40
-2019-07-11 19:43:29.698498: Iteration 6: 0.26
-2019-07-11 19:43:30.040841: Iteration 7: 0.34
-2019-07-11 19:43:30.198168: Iteration 8: 0.16
-2019-07-11 19:43:30.656735: Iteration 9: 0.46
-2019-07-11 19:43:30.693083: Iteration 10: 0.04
-2019-07-11 19:43:30.693609: 
-2019-07-11 19:43:30.693621: Results for 5 records averaged over 11 repetitions:
-2019-07-11 19:43:30.694902: Actual rows fetched: 5
-2019-07-11 19:43:30.695481: Time to execute select: 0.39 seconds
-2019-07-11 19:43:30.695991: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:43:30.696819: Total time: 0.40 seconds
-2019-07-11 19:43:31.015327: Iteration 0: 0.19
-2019-07-11 19:43:31.434289: Iteration 1: 0.42
-2019-07-11 19:43:32.130515: Iteration 2: 0.70
-2019-07-11 19:43:32.176980: Iteration 3: 0.04
-2019-07-11 19:43:32.588737: Iteration 4: 0.41
-2019-07-11 19:43:32.848075: Iteration 5: 0.26
-2019-07-11 19:43:32.997802: Iteration 6: 0.15
-2019-07-11 19:43:34.253075: Iteration 7: 1.25
-2019-07-11 19:43:35.209469: Iteration 8: 0.96
-2019-07-11 19:43:35.345548: Iteration 9: 0.08
-2019-07-11 19:43:35.892807: Iteration 10: 0.55
-2019-07-11 19:43:35.893219: 
-2019-07-11 19:43:35.893232: Results for 10 records averaged over 11 repetitions:
-2019-07-11 19:43:35.894353: Actual rows fetched: 10
-2019-07-11 19:43:35.894800: Time to execute select: 0.45 seconds
-2019-07-11 19:43:35.895401: Time to put into dataframe: 0.01 seconds
-2019-07-11 19:43:35.895915: Total time: 0.46 seconds
+2019-07-12 13:23:46.535079: Systems Information:
+2019-07-12 13:23:46.542066: 
+2019-07-12 13:23:46.542080: Clickhouse Instance: 192.168.5.60:9000
+2019-07-12 13:23:46.543328: 
+2019-07-12 13:23:46.543352: Cassandra Instance: dev-cassandra.ksg.int:9042
+2019-07-12 13:23:46.544253: 
+2019-07-12 13:23:46.544269: Clickhouse Table Definition:
+2019-07-12 13:23:46.544269: CREATE TABLE radius.udr_other ( CreateDate DateTime default now(), partitionhash UInt64,hashcode String,carrierid UInt64,subscriptionid UInt64,Message String ) ENGINE = MergeTree() PARTITION BY toYYYYMM(CreateDate) order by partitionhash
+2019-07-12 13:23:46.546527: 
+2019-07-12 13:23:46.546542: Cassandra Table Definition:
+2019-07-12 13:23:46.546542: CREATE TABLE "CassandraPractice".udr_copy1 (
+2019-07-12 13:23:46.546542: 	partitionhash int,
+2019-07-12 13:23:46.546542: 	hashcode text,
+2019-07-12 13:23:46.546542: 	accountnumber text,
+2019-07-12 13:23:46.546542: 	airtimeclass int,
+2019-07-12 13:23:46.546542: 	airtimeunits double,
+2019-07-12 13:23:46.546542: 	allocationcompletedate text,
+2019-07-12 13:23:46.546542: 	apn text,
+2019-07-12 13:23:46.546542: 	callednumber text,
+2019-07-12 13:23:46.546542: 	callingnumber text,
+2019-07-12 13:23:46.546542: 	carrierid int,
+2019-07-12 13:23:46.546542: 	cellid text,
+2019-07-12 13:23:46.546542: 	chargingid text,
+2019-07-12 13:23:46.546542: 	costcenterid int,
+2019-07-12 13:23:46.546542: 	downlinkvol bigint,
+2019-07-12 13:23:46.546542: 	duration double,
+2019-07-12 13:23:46.546542: 	exactusagedateonly date,
+2019-07-12 13:23:46.546542: 	exactusagetime text,
+2019-07-12 13:23:46.546542: 	fileid int,
+2019-07-12 13:23:46.546542: 	iccid text,
+2019-07-12 13:23:46.546542: 	imei text,
+2019-07-12 13:23:46.546542: 	imsi text,
+2019-07-12 13:23:46.546542: 	lineid bigint,
+2019-07-12 13:23:46.546542: 	linenumber int,
+2019-07-12 13:23:46.546542: 	mobilecountrycode text,
+2019-07-12 13:23:46.546542: 	mobilenetworkcode text,
+2019-07-12 13:23:46.546542: 	mobileoriginated boolean,
+2019-07-12 13:23:46.546542: 	msisdn text,
+2019-07-12 13:23:46.546542: 	network text,
+2019-07-12 13:23:46.546542: 	orgid int,
+2019-07-12 13:23:46.546542: 	orgurn text,
+2019-07-12 13:23:46.546542: 	plmn text,
+2019-07-12 13:23:46.546542: 	propertybag MAP<text, text>,
+2019-07-12 13:23:46.546542: 	recordtype text,
+2019-07-12 13:23:46.546542: 	roamingindicator text,
+2019-07-12 13:23:46.546542: 	roundingdate text,
+2019-07-12 13:23:46.546542: 	sender text,
+2019-07-12 13:23:46.546542: 	subscriptionid int,
+2019-07-12 13:23:46.546542: 	subscriptionurn text,
+2019-07-12 13:23:46.546542: 	surrecordtypeid int,
+2019-07-12 13:23:46.546542: 	tapcode text,
+2019-07-12 13:23:46.546542: 	uplinkvol bigint,
+2019-07-12 13:23:46.546542: 	usagetypeid int,
+2019-07-12 13:23:46.546542: 	PRIMARY KEY (partitionhash, hashcode)
+2019-07-12 13:23:46.546542: ) WITH bloom_filter_fp_chance = 0.01
+2019-07-12 13:23:46.546542: AND comment = ''
+2019-07-12 13:23:46.546542: AND crc_check_chance = 1.0
+2019-07-12 13:23:46.546542: AND dclocal_read_repair_chance = 0.1
+2019-07-12 13:23:46.546542: AND default_time_to_live = 0
+2019-07-12 13:23:46.546542: AND gc_grace_seconds = 864000
+2019-07-12 13:23:46.546542: AND max_index_interval = 2048
+2019-07-12 13:23:46.546542: AND memtable_flush_period_in_ms = 0
+2019-07-12 13:23:46.546542: AND min_index_interval = 128
+2019-07-12 13:23:46.546542: AND read_repair_chance = 0.0
+2019-07-12 13:23:46.546542: AND speculative_retry = '99.0PERCENTILE'
+2019-07-12 13:23:46.546542: AND caching = {
+2019-07-12 13:23:46.546542: 	'keys' : 'NONE',
+2019-07-12 13:23:46.546542: 	'rows_per_partition' : 'NONE'
+2019-07-12 13:23:46.546542: }
+2019-07-12 13:23:46.546542: AND compression = {
+2019-07-12 13:23:46.546542: 	'chunk_length_in_kb' : 64,
+2019-07-12 13:23:46.546542: 	'class' : 'LZ4Compressor',
+2019-07-12 13:23:46.546542: 	'enabled' : true
+2019-07-12 13:23:46.546542: }
+2019-07-12 13:23:46.546542: AND compaction = {
+2019-07-12 13:23:46.546542: 	'class' : 'SizeTieredCompactionStrategy',
+2019-07-12 13:23:46.546542: 	'max_threshold' : 32,
+2019-07-12 13:23:46.546542: 	'min_threshold' : 4
+2019-07-12 13:23:46.546542: };
+2019-07-12 13:23:46.590453: 
+2019-07-12 13:23:46.590473: 
+2019-07-12 13:23:46.594223: Beginning Clickhouse Test
+2019-07-12 13:23:46.666711: Thread 139764940736256 starting
+2019-07-12 13:23:46.667448: Thread 139764940736256 starting background query: select tcp_flags,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags,icmp_type order by connections desc limit 50
+2019-07-12 13:23:47.667655: Thread 139764982744832 starting
+2019-07-12 13:23:47.668363: Thread 139764982744832 starting background query: select direction,forwarding_statusstatus,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by direction,forwarding_statusstatus,icmp_type order by connections desc limit 50
+2019-07-12 13:23:48.669637: Thread 139764991198976 starting
+2019-07-12 13:23:48.670903: Thread 139764991198976 starting background query: select protocolname,ipv4_src_addr,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by protocolname,ipv4_src_addr order by connections desc limit 50
+2019-07-12 13:23:49.672369: Thread 139764476872448 starting
+2019-07-12 13:23:49.674314: Thread 139764476872448 starting background query: select direction,forwarding_statusstatus,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by direction,forwarding_statusstatus,icmp_type order by connections desc limit 50
+2019-07-12 13:23:50.673590: 
+2019-07-12 13:23:50.673612: 
+2019-07-12 13:23:50.673612: Current Schema: "CH(JSON)" if schema_num == 0 else "CH(NEW)
+2019-07-12 13:23:50.675415: 
+2019-07-12 13:23:50.675437: Current Query: Bulk Retrieval
+2019-07-12 13:23:50.786079: Iteration 0: 0.11
+2019-07-12 13:23:50.829595: Iteration 1: 0.04
+2019-07-12 13:23:50.875372: Iteration 2: 0.05
+2019-07-12 13:23:50.898728: Iteration 3: 0.02
+2019-07-12 13:23:50.958352: Iteration 4: 0.06
+2019-07-12 13:23:50.978972: Iteration 5: 0.02
+2019-07-12 13:23:51.038261: Iteration 6: 0.06
+2019-07-12 13:23:51.091139: Iteration 7: 0.05
+2019-07-12 13:23:51.154752: Iteration 8: 0.06
+2019-07-12 13:23:51.180046: Iteration 9: 0.02
+2019-07-12 13:23:51.256352: Iteration 10: 0.08
+2019-07-12 13:23:51.256895: 
+2019-07-12 13:23:51.256912: Results for 1 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:51.257980: Actual rows fetched: 1
+2019-07-12 13:23:51.258459: Time to execute select: 0.05 seconds
+2019-07-12 13:23:51.258945: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:51.259443: Total time: 0.05 seconds
+2019-07-12 13:23:51.284321: Iteration 0: 0.02
+2019-07-12 13:23:51.335965: Iteration 1: 0.05
+2019-07-12 13:23:51.355901: Iteration 2: 0.02
+2019-07-12 13:23:51.410840: Iteration 3: 0.05
+2019-07-12 13:23:51.459906: Iteration 4: 0.05
+2019-07-12 13:23:51.502911: Iteration 5: 0.04
+2019-07-12 13:23:51.531950: Iteration 6: 0.03
+2019-07-12 13:23:51.601541: Iteration 7: 0.07
+2019-07-12 13:23:51.622492: Iteration 8: 0.02
+2019-07-12 13:23:51.650292: Iteration 9: 0.03
+2019-07-12 13:23:51.698489: Iteration 10: 0.05
+2019-07-12 13:23:51.699003: 
+2019-07-12 13:23:51.699024: Results for 5 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:51.700135: Actual rows fetched: 5
+2019-07-12 13:23:51.700720: Time to execute select: 0.03 seconds
+2019-07-12 13:23:51.701532: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:51.702535: Total time: 0.04 seconds
+2019-07-12 13:23:51.738528: Iteration 0: 0.04
+2019-07-12 13:23:51.777618: Iteration 1: 0.04
+2019-07-12 13:23:51.812433: Iteration 2: 0.03
+2019-07-12 13:23:51.842331: Iteration 3: 0.03
+2019-07-12 13:23:51.879150: Iteration 4: 0.04
+2019-07-12 13:23:51.934882: Iteration 5: 0.06
+2019-07-12 13:23:52.001572: Iteration 6: 0.07
+2019-07-12 13:23:52.026327: Iteration 7: 0.02
+2019-07-12 13:23:52.078627: Iteration 8: 0.05
+2019-07-12 13:23:52.130163: Iteration 9: 0.05
+2019-07-12 13:23:52.167118: Iteration 10: 0.04
+2019-07-12 13:23:52.167408: 
+2019-07-12 13:23:52.167416: Results for 10 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:52.169249: Actual rows fetched: 10
+2019-07-12 13:23:52.169906: Time to execute select: 0.04 seconds
+2019-07-12 13:23:52.170781: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:52.171561: Total time: 0.04 seconds
+2019-07-12 13:23:52.202906: Iteration 0: 0.03
+2019-07-12 13:23:52.236867: Iteration 1: 0.03
+2019-07-12 13:23:52.271904: Iteration 2: 0.03
+2019-07-12 13:23:52.322420: Iteration 3: 0.05
+2019-07-12 13:23:52.371315: Iteration 4: 0.05
+2019-07-12 13:23:52.405886: Iteration 5: 0.03
+2019-07-12 13:23:52.469951: Iteration 6: 0.06
+2019-07-12 13:23:52.517734: Iteration 7: 0.05
+2019-07-12 13:23:52.568523: Iteration 8: 0.05
+2019-07-12 13:23:52.675113: Iteration 9: 0.11
+2019-07-12 13:23:52.742078: Iteration 10: 0.07
+2019-07-12 13:23:52.742715: 
+2019-07-12 13:23:52.742728: Results for 50 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:52.744058: Actual rows fetched: 50
+2019-07-12 13:23:52.744835: Time to execute select: 0.05 seconds
+2019-07-12 13:23:52.745367: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:52.746046: Total time: 0.05 seconds
+2019-07-12 13:23:52.835667: Iteration 0: 0.09
+2019-07-12 13:23:52.910055: Iteration 1: 0.07
+2019-07-12 13:23:53.000327: Iteration 2: 0.09
+2019-07-12 13:23:53.044257: Iteration 3: 0.04
+2019-07-12 13:23:53.085784: Iteration 4: 0.04
+2019-07-12 13:23:53.130403: Iteration 5: 0.04
+2019-07-12 13:23:53.187271: Iteration 6: 0.06
+2019-07-12 13:23:53.242115: Iteration 7: 0.05
+2019-07-12 13:23:53.277460: Iteration 8: 0.03
+2019-07-12 13:23:53.318899: Iteration 9: 0.04
+2019-07-12 13:23:53.364382: Iteration 10: 0.04
+2019-07-12 13:23:53.365077: 
+2019-07-12 13:23:53.365107: Results for 100 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:53.366668: Actual rows fetched: 100
+2019-07-12 13:23:53.367387: Time to execute select: 0.05 seconds
+2019-07-12 13:23:53.368374: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:53.369020: Total time: 0.06 seconds
+2019-07-12 13:23:53.430381: Iteration 0: 0.06
+2019-07-12 13:23:53.487950: Iteration 1: 0.06
+2019-07-12 13:23:53.535215: Iteration 2: 0.05
+2019-07-12 13:23:53.585167: Iteration 3: 0.05
+2019-07-12 13:23:53.674326: Iteration 4: 0.09
+2019-07-12 13:23:53.745517: Iteration 5: 0.07
+2019-07-12 13:23:53.852035: Iteration 6: 0.11
+2019-07-12 13:23:53.950127: Iteration 7: 0.10
+2019-07-12 13:23:54.030359: Iteration 8: 0.08
+2019-07-12 13:23:54.107829: Iteration 9: 0.08
+2019-07-12 13:23:54.177211: Iteration 10: 0.07
+2019-07-12 13:23:54.177695: 
+2019-07-12 13:23:54.177712: Results for 500 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:54.178880: Actual rows fetched: 500
+2019-07-12 13:23:54.179516: Time to execute select: 0.07 seconds
+2019-07-12 13:23:54.180094: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:54.180681: Total time: 0.07 seconds
+2019-07-12 13:23:54.312015: Iteration 0: 0.13
+2019-07-12 13:23:54.426680: Iteration 1: 0.11
+2019-07-12 13:23:54.527152: Iteration 2: 0.10
+2019-07-12 13:23:54.618585: Iteration 3: 0.09
+2019-07-12 13:23:54.721102: Iteration 4: 0.10
+2019-07-12 13:23:54.804249: Iteration 5: 0.08
+2019-07-12 13:23:54.906727: Iteration 6: 0.10
+2019-07-12 13:23:55.017205: Iteration 7: 0.11
+2019-07-12 13:23:55.111038: Iteration 8: 0.09
+2019-07-12 13:23:55.221420: Iteration 9: 0.11
+2019-07-12 13:23:55.329059: Iteration 10: 0.11
+2019-07-12 13:23:55.329736: 
+2019-07-12 13:23:55.329753: Results for 1000 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:23:55.331133: Actual rows fetched: 1000
+2019-07-12 13:23:55.331546: Time to execute select: 0.09 seconds
+2019-07-12 13:23:55.332275: Time to put into dataframe: 0.01 seconds
+2019-07-12 13:23:55.332782: Total time: 0.10 seconds
+2019-07-12 13:23:55.877503: Iteration 0: 0.54
+2019-07-12 13:23:56.372491: Iteration 1: 0.48
+2019-07-12 13:23:56.818549: Iteration 2: 0.45
+2019-07-12 13:23:57.218837: Iteration 3: 0.40
+2019-07-12 13:23:57.654990: Iteration 4: 0.44
+2019-07-12 13:23:58.066057: Iteration 5: 0.41
+2019-07-12 13:23:58.475044: Iteration 6: 0.41
+2019-07-12 13:23:58.851055: Iteration 7: 0.38
+2019-07-12 13:23:59.276500: Iteration 8: 0.42
+2019-07-12 13:23:59.686170: Iteration 9: 0.41
+2019-07-12 13:24:00.036402: Iteration 10: 0.35
+2019-07-12 13:24:00.036893: 
+2019-07-12 13:24:00.036903: Results for 5000 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:24:00.038637: Actual rows fetched: 5000
+2019-07-12 13:24:00.039011: Time to execute select: 0.40 seconds
+2019-07-12 13:24:00.039596: Time to put into dataframe: 0.03 seconds
+2019-07-12 13:24:00.040191: Total time: 0.43 seconds
+2019-07-12 13:24:00.656744: Iteration 0: 0.62
+2019-07-12 13:24:01.303960: Iteration 1: 0.65
+2019-07-12 13:24:01.900329: Iteration 2: 0.60
+2019-07-12 13:24:02.567856: Iteration 3: 0.67
+2019-07-12 13:24:03.217533: Iteration 4: 0.65
+2019-07-12 13:24:03.857180: Iteration 5: 0.64
+2019-07-12 13:24:04.543909: Iteration 6: 0.69
+2019-07-12 13:24:05.190732: Iteration 7: 0.65
+2019-07-12 13:24:05.828845: Iteration 8: 0.64
+2019-07-12 13:24:06.517539: Iteration 9: 0.69
+2019-07-12 13:24:07.133222: Iteration 10: 0.62
+2019-07-12 13:24:07.133712: 
+2019-07-12 13:24:07.133721: Results for 10000 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:24:07.135036: Actual rows fetched: 10000
+2019-07-12 13:24:07.135844: Time to execute select: 0.60 seconds
+2019-07-12 13:24:07.136504: Time to put into dataframe: 0.05 seconds
+2019-07-12 13:24:07.137126: Total time: 0.64 seconds
+2019-07-12 13:24:09.933534: Iteration 0: 2.80
+2019-07-12 13:24:13.004182: Iteration 1: 3.07
+2019-07-12 13:24:16.017262: Iteration 2: 3.01
+2019-07-12 13:24:18.926959: Iteration 3: 2.91
+2019-07-12 13:24:21.845711: Iteration 4: 2.92
+2019-07-12 13:24:24.770443: Iteration 5: 2.92
+2019-07-12 13:24:27.565960: Iteration 6: 2.79
+2019-07-12 13:24:30.513331: Iteration 7: 2.95
+2019-07-12 13:24:33.394561: Iteration 8: 2.88
+2019-07-12 13:24:35.842505: Iteration 9: 2.45
+2019-07-12 13:24:38.582549: Iteration 10: 2.74
+2019-07-12 13:24:38.582998: 
+2019-07-12 13:24:38.583013: Results for 50000 records averaged over 11 repetitions with schema type JSON:
+2019-07-12 13:24:38.584278: Actual rows fetched: 50000
+2019-07-12 13:24:38.584761: Time to execute select: 2.51 seconds
+2019-07-12 13:24:38.585287: Time to put into dataframe: 0.35 seconds
+2019-07-12 13:24:38.585835: Total time: 2.86 seconds
+2019-07-12 13:24:44.011062: Iteration 0: 5.42
+2019-07-12 13:24:49.125230: Iteration 1: 5.11
