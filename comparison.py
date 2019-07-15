@@ -194,7 +194,6 @@ clkhs_artificial_queries = ["select direction,forwarding_statusstatus,icmp_type,
     "select protocolname,ipv4_src_addr,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by protocolname,ipv4_src_addr order by connections desc limit 50",
     "select dst_mask,ipv4_next_hop,in_dst_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by dst_mask,ipv4_next_hop,in_dst_mac order by connections desc limit 50",
     "select in_dst_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by in_dst_mac order by connections desc limit 50",
-    "select in_bytes,ipv4_next_hop,last_switched,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by in_bytes,ipv4_next_hop,last_switched order by connections desc limit 50",
     "select tcp_flags,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by tcp_flags order by connections desc limit 50"] # For use in the threads
 clkhs_stop_threads = False  
 
@@ -297,7 +296,7 @@ def clkhs_artificial_load():
     while (not clkhs_stop_threads):
         try:
             # Select a query to issue
-            query = clkhs_artificial_queries[random.randint(0, 9)]
+            query = clkhs_artificial_queries[random.randint(0, 8)]
             do_logging('Thread ' + str(threading.get_ident()) + ' starting background query: ' + query)
 
             # Issue query and iterate through result set
