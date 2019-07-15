@@ -356,7 +356,7 @@ for i in range(0, 4):
 schema_num = -1
 for clkhs_select_query_prefix in clkhs_select_query_prefixes:
     schema_num = schema_num + 1
-    do_logging('\n\nCurrent Schema: ' + ("CH(JSON)" if schema_num == 0 else "CH(NEW)"))
+    do_logging('\n\nCurrent Schema: ' + ("CH(JSON)" if schema_num == 0 else "CH(RAW)"))
 
     clkhs_json_query_timing_matrix = []
     clkhs_json_parse_timing_matrix = []
@@ -428,7 +428,7 @@ for clkhs_select_query_prefix in clkhs_select_query_prefixes:
             clkhs_rows_returned_list.append(rows_returned)
 
             # Logging
-            schema_type = "JSON" if schema_num == 0 else "NEW"
+            schema_type = "JSON" if schema_num == 0 else "RAW"
             do_logging("\nResults for %d records averaged over %d repetitions with schema type %s:" % (num_rows, num_repetitions, schema_type))
             do_logging("Actual rows fetched: %d" % (int(clkhs_UDR_df.size / num_cols)))
             do_logging("Time to execute select: %.2f seconds" % (avg_query_time))
@@ -448,7 +448,7 @@ for clkhs_select_query_prefix in clkhs_select_query_prefixes:
         clkhs_json_rows_returned_matrix.append(clkhs_rows_returned_list)
             
     # Write to file
-    csv_file.write(format_output("CH(JSON)" if schema_num == 0 else "CH(NEW)", query_descriptions, num_rows_list, clkhs_json_query_timing_matrix, clkhs_json_parse_timing_matrix, clkhs_json_rows_returned_matrix) + '\n')
+    csv_file.write(format_output("CH(JSON)" if schema_num == 0 else "CH(RAW)", query_descriptions, num_rows_list, clkhs_json_query_timing_matrix, clkhs_json_parse_timing_matrix, clkhs_json_rows_returned_matrix) + '\n')
 
 # Clean up artifical load
 clkhs_stop_threads = True

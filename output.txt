@@ -1578,7 +1578,7 @@
 2019-07-12 18:04:21.163795: Total time: 24.56 seconds
 2019-07-12 18:04:21.164427: 
 2019-07-12 18:04:21.164437: 
-2019-07-12 18:04:21.164437: Current Schema: CH(NEW)
+2019-07-12 18:04:21.164437: Current Schema: CH(RAW)
 2019-07-12 18:04:21.169220: 
 2019-07-12 18:04:21.169238: Current Query: Bulk Retrieval
 2019-07-12 18:04:21.233143: Iteration 0: 0.06
@@ -1593,7 +1593,7 @@
 2019-07-12 18:04:21.600367: Iteration 9: 0.03
 2019-07-12 18:04:21.670933: Iteration 10: 0.07
 2019-07-12 18:04:21.671585: 
-2019-07-12 18:04:21.671604: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:04:21.671604: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:04:21.672376: Actual rows fetched: 1
 2019-07-12 18:04:21.672582: Time to execute select: 0.04 seconds
 2019-07-12 18:04:21.672893: Time to put into dataframe: 0.01 seconds
@@ -1610,7 +1610,7 @@
 2019-07-12 18:04:22.079722: Iteration 9: 0.04
 2019-07-12 18:04:22.151593: Iteration 10: 0.07
 2019-07-12 18:04:22.152239: 
-2019-07-12 18:04:22.152248: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:04:22.152248: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:04:22.152807: Actual rows fetched: 10
 2019-07-12 18:04:22.153189: Time to execute select: 0.04 seconds
 2019-07-12 18:04:22.153340: Time to put into dataframe: 0.01 seconds
@@ -1627,7 +1627,7 @@
 2019-07-12 18:04:22.659918: Iteration 9: 0.06
 2019-07-12 18:04:22.692297: Iteration 10: 0.03
 2019-07-12 18:04:22.692859: 
-2019-07-12 18:04:22.692868: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:04:22.692868: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:04:22.693628: Actual rows fetched: 100
 2019-07-12 18:04:22.693999: Time to execute select: 0.04 seconds
 2019-07-12 18:04:22.694371: Time to put into dataframe: 0.00 seconds
@@ -1644,7 +1644,7 @@
 2019-07-12 18:04:23.509123: Iteration 9: 0.07
 2019-07-12 18:04:23.576141: Iteration 10: 0.07
 2019-07-12 18:04:23.576496: 
-2019-07-12 18:04:23.576507: Results for 1000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:04:23.576507: Results for 1000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:04:23.576736: Actual rows fetched: 1000
 2019-07-12 18:04:23.576880: Time to execute select: 0.07 seconds
 2019-07-12 18:04:23.576992: Time to put into dataframe: 0.01 seconds
@@ -1661,7 +1661,7 @@
 2019-07-12 18:04:28.849772: Iteration 9: 0.55
 2019-07-12 18:04:29.393297: Iteration 10: 0.54
 2019-07-12 18:04:29.393883: 
-2019-07-12 18:04:29.393892: Results for 10000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:04:29.393892: Results for 10000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:04:29.394609: Actual rows fetched: 10000
 2019-07-12 18:04:29.394994: Time to execute select: 0.48 seconds
 2019-07-12 18:04:29.395410: Time to put into dataframe: 0.05 seconds
@@ -1678,7 +1678,7 @@
 2019-07-12 18:05:14.115146: Iteration 9: 4.55
 2019-07-12 18:05:18.541716: Iteration 10: 4.43
 2019-07-12 18:05:18.542356: 
-2019-07-12 18:05:18.542364: Results for 100000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:05:18.542364: Results for 100000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:05:18.543095: Actual rows fetched: 100000
 2019-07-12 18:05:18.543415: Time to execute select: 3.81 seconds
 2019-07-12 18:05:18.543761: Time to put into dataframe: 0.66 seconds
@@ -1733,7 +1733,7 @@
 2019-07-12 18:13:18.897354: Thread 140286829594368 starting background query: select direction,forwarding_statusstatus,icmp_type,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by direction,forwarding_statusstatus,icmp_type order by connections desc limit 50
 2019-07-12 18:14:01.277375: Iteration 10: 48.84
 2019-07-12 18:14:01.277871: 
-2019-07-12 18:14:01.277880: Results for 1000000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:01.277880: Results for 1000000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:01.278347: Actual rows fetched: 1000000
 2019-07-12 18:14:01.278478: Time to execute select: 39.65 seconds
 2019-07-12 18:14:01.278575: Time to put into dataframe: 7.87 seconds
@@ -1753,7 +1753,7 @@
 2019-07-12 18:14:03.390077: Iteration 9: 0.03
 2019-07-12 18:14:03.443149: Iteration 10: 0.05
 2019-07-12 18:14:03.444490: 
-2019-07-12 18:14:03.444522: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:03.444522: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:03.445972: Actual rows fetched: 0
 2019-07-12 18:14:03.447038: Time to execute select: 0.12 seconds
 2019-07-12 18:14:03.447640: Time to put into dataframe: 0.07 seconds
@@ -1772,7 +1772,7 @@
 2019-07-12 18:14:04.640400: Iteration 9: 0.08
 2019-07-12 18:14:04.770539: Iteration 10: 0.13
 2019-07-12 18:14:04.771250: 
-2019-07-12 18:14:04.771272: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:04.771272: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:04.772130: Actual rows fetched: 1
 2019-07-12 18:14:04.772486: Time to execute select: 0.10 seconds
 2019-07-12 18:14:04.772996: Time to put into dataframe: 0.01 seconds
@@ -1789,7 +1789,7 @@
 2019-07-12 18:14:05.862047: Iteration 9: 0.10
 2019-07-12 18:14:05.938392: Iteration 10: 0.08
 2019-07-12 18:14:05.939435: 
-2019-07-12 18:14:05.939457: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:05.939457: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:05.940408: Actual rows fetched: 10
 2019-07-12 18:14:05.940927: Time to execute select: 0.09 seconds
 2019-07-12 18:14:05.941533: Time to put into dataframe: 0.01 seconds
@@ -1806,7 +1806,7 @@
 2019-07-12 18:14:06.909473: Iteration 9: 0.06
 2019-07-12 18:14:07.013741: Iteration 10: 0.10
 2019-07-12 18:14:07.014400: 
-2019-07-12 18:14:07.014415: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:07.014415: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:07.015252: Actual rows fetched: 100
 2019-07-12 18:14:07.015690: Time to execute select: 0.09 seconds
 2019-07-12 18:14:07.015947: Time to put into dataframe: 0.01 seconds
@@ -1823,7 +1823,7 @@
 2019-07-12 18:14:08.506247: Iteration 9: 0.14
 2019-07-12 18:14:08.656492: Iteration 10: 0.15
 2019-07-12 18:14:08.657034: 
-2019-07-12 18:14:08.657043: Results for 1000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:08.657043: Results for 1000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:08.657767: Actual rows fetched: 1000
 2019-07-12 18:14:08.658166: Time to execute select: 0.14 seconds
 2019-07-12 18:14:08.658555: Time to put into dataframe: 0.01 seconds
@@ -1840,7 +1840,7 @@
 2019-07-12 18:14:13.568014: Iteration 9: 0.45
 2019-07-12 18:14:14.096771: Iteration 10: 0.53
 2019-07-12 18:14:14.097207: 
-2019-07-12 18:14:14.097214: Results for 10000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:14.097214: Results for 10000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:14.097508: Actual rows fetched: 10000
 2019-07-12 18:14:14.097642: Time to execute select: 0.44 seconds
 2019-07-12 18:14:14.097770: Time to put into dataframe: 0.05 seconds
@@ -1858,7 +1858,7 @@
 2019-07-12 18:14:53.712073: Iteration 9: 4.13
 2019-07-12 18:14:58.028735: Iteration 10: 4.32
 2019-07-12 18:14:58.029158: 
-2019-07-12 18:14:58.029169: Results for 100000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:14:58.029169: Results for 100000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:14:58.029423: Actual rows fetched: 100000
 2019-07-12 18:14:58.029625: Time to execute select: 3.36 seconds
 2019-07-12 18:14:58.029807: Time to put into dataframe: 0.63 seconds
@@ -1877,7 +1877,7 @@
 2019-07-12 18:15:00.027896: Iteration 9: 0.20
 2019-07-12 18:15:00.184025: Iteration 10: 0.16
 2019-07-12 18:15:00.184577: 
-2019-07-12 18:15:00.184589: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:15:00.184589: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:15:00.185056: Actual rows fetched: 1
 2019-07-12 18:15:00.185230: Time to execute select: 0.18 seconds
 2019-07-12 18:15:00.185409: Time to put into dataframe: 0.02 seconds
@@ -1894,7 +1894,7 @@
 2019-07-12 18:15:02.157393: Iteration 9: 0.20
 2019-07-12 18:15:02.332898: Iteration 10: 0.17
 2019-07-12 18:15:02.333927: 
-2019-07-12 18:15:02.333951: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:15:02.333951: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:15:02.335177: Actual rows fetched: 10
 2019-07-12 18:15:02.335674: Time to execute select: 0.18 seconds
 2019-07-12 18:15:02.336143: Time to put into dataframe: 0.02 seconds
@@ -1911,7 +1911,7 @@
 2019-07-12 18:15:04.292535: Iteration 9: 0.17
 2019-07-12 18:15:04.465495: Iteration 10: 0.17
 2019-07-12 18:15:04.466582: 
-2019-07-12 18:15:04.466607: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:15:04.466607: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:15:04.467941: Actual rows fetched: 100
 2019-07-12 18:15:04.468545: Time to execute select: 0.18 seconds
 2019-07-12 18:15:04.469029: Time to put into dataframe: 0.01 seconds
@@ -1928,7 +1928,7 @@
 2019-07-12 18:15:06.475294: Iteration 9: 0.21
 2019-07-12 18:15:06.654350: Iteration 10: 0.18
 2019-07-12 18:15:06.654811: 
-2019-07-12 18:15:06.654819: Results for 1000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:15:06.654819: Results for 1000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:15:06.655231: Actual rows fetched: 1000
 2019-07-12 18:15:06.655440: Time to execute select: 0.19 seconds
 2019-07-12 18:15:06.655583: Time to put into dataframe: 0.01 seconds
@@ -1945,7 +1945,7 @@
 2019-07-12 18:15:11.822200: Iteration 9: 0.52
 2019-07-12 18:15:12.306641: Iteration 10: 0.48
 2019-07-12 18:15:12.307154: 
-2019-07-12 18:15:12.307162: Results for 10000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:15:12.307162: Results for 10000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:15:12.307537: Actual rows fetched: 10000
 2019-07-12 18:15:12.307739: Time to execute select: 0.46 seconds
 2019-07-12 18:15:12.307943: Time to put into dataframe: 0.05 seconds
@@ -1986,7 +1986,7 @@
 2019-07-12 18:15:57.119255: Iteration 9: 5.10
 2019-07-12 18:16:01.583121: Iteration 10: 4.46
 2019-07-12 18:16:01.583714: 
-2019-07-12 18:16:01.583722: Results for 100000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:16:01.583722: Results for 100000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:16:01.584393: Actual rows fetched: 100000
 2019-07-12 18:16:01.584786: Time to execute select: 3.78 seconds
 2019-07-12 18:16:01.585182: Time to put into dataframe: 0.70 seconds
@@ -2154,7 +2154,7 @@
 2019-07-12 18:24:43.187881: Thread 140286526359296 starting background query: select flowset_id,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by flowset_id order by connections desc limit 50
 2019-07-12 18:24:47.311942: Iteration 10: 49.04
 2019-07-12 18:24:47.312504: 
-2019-07-12 18:24:47.312512: Results for 1000000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:24:47.312512: Results for 1000000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:24:47.312975: Actual rows fetched: 1000000
 2019-07-12 18:24:47.313152: Time to execute select: 40.18 seconds
 2019-07-12 18:24:47.313328: Time to put into dataframe: 7.61 seconds
@@ -2173,7 +2173,7 @@
 2019-07-12 18:24:50.928800: Iteration 9: 0.21
 2019-07-12 18:24:51.158799: Iteration 10: 0.23
 2019-07-12 18:24:51.159388: 
-2019-07-12 18:24:51.159397: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:24:51.159397: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:24:51.160153: Actual rows fetched: 1
 2019-07-12 18:24:51.160323: Time to execute select: 0.27 seconds
 2019-07-12 18:24:51.160514: Time to put into dataframe: 0.08 seconds
@@ -2190,7 +2190,7 @@
 2019-07-12 18:24:52.950964: Iteration 9: 0.14
 2019-07-12 18:24:53.083499: Iteration 10: 0.13
 2019-07-12 18:24:53.083928: 
-2019-07-12 18:24:53.083937: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:24:53.083937: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:24:53.084404: Actual rows fetched: 10
 2019-07-12 18:24:53.084586: Time to execute select: 0.17 seconds
 2019-07-12 18:24:53.084804: Time to put into dataframe: 0.00 seconds
@@ -2207,7 +2207,7 @@
 2019-07-12 18:24:54.632482: Iteration 9: 0.14
 2019-07-12 18:24:54.830882: Iteration 10: 0.20
 2019-07-12 18:24:54.831418: 
-2019-07-12 18:24:54.831433: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:24:54.831433: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:24:54.831758: Actual rows fetched: 100
 2019-07-12 18:24:54.831945: Time to execute select: 0.15 seconds
 2019-07-12 18:24:54.832122: Time to put into dataframe: 0.01 seconds
@@ -2224,7 +2224,7 @@
 2019-07-12 18:24:56.769348: Iteration 9: 0.17
 2019-07-12 18:24:56.986099: Iteration 10: 0.22
 2019-07-12 18:24:56.986615: 
-2019-07-12 18:24:56.986623: Results for 1000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:24:56.986623: Results for 1000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:24:56.987197: Actual rows fetched: 1000
 2019-07-12 18:24:56.987584: Time to execute select: 0.18 seconds
 2019-07-12 18:24:56.987919: Time to put into dataframe: 0.02 seconds
@@ -2241,7 +2241,7 @@
 2019-07-12 18:25:02.446594: Iteration 9: 0.59
 2019-07-12 18:25:02.952314: Iteration 10: 0.51
 2019-07-12 18:25:02.952743: 
-2019-07-12 18:25:02.952751: Results for 10000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:25:02.952751: Results for 10000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:25:02.953090: Actual rows fetched: 10000
 2019-07-12 18:25:02.953201: Time to execute select: 0.48 seconds
 2019-07-12 18:25:02.953327: Time to put into dataframe: 0.06 seconds
@@ -2282,7 +2282,7 @@
 2019-07-12 18:25:51.866816: Thread 140286838048512 starting background query: select flowset_id,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by flowset_id order by connections desc limit 50
 2019-07-12 18:25:55.090007: Iteration 10: 4.51
 2019-07-12 18:25:55.090501: 
-2019-07-12 18:25:55.090509: Results for 100000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:25:55.090509: Results for 100000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:25:55.090849: Actual rows fetched: 100000
 2019-07-12 18:25:55.091021: Time to execute select: 4.07 seconds
 2019-07-12 18:25:55.091213: Time to put into dataframe: 0.67 seconds
@@ -2390,7 +2390,7 @@
 2019-07-12 18:34:32.987164: Thread 140286838048512 starting background query: select out_src_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by out_src_mac order by connections desc limit 50
 2019-07-12 18:34:39.556283: Iteration 10: 45.21
 2019-07-12 18:34:39.557008: 
-2019-07-12 18:34:39.557034: Results for 1000000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:34:39.557034: Results for 1000000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:34:39.557309: Actual rows fetched: 1000000
 2019-07-12 18:34:39.557442: Time to execute select: 39.99 seconds
 2019-07-12 18:34:39.557569: Time to put into dataframe: 7.69 seconds
@@ -2409,7 +2409,7 @@
 2019-07-12 18:34:42.633400: Iteration 9: 0.15
 2019-07-12 18:34:42.837911: Iteration 10: 0.20
 2019-07-12 18:34:42.838482: 
-2019-07-12 18:34:42.838493: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:34:42.838493: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:34:42.839276: Actual rows fetched: 1
 2019-07-12 18:34:42.839625: Time to execute select: 0.21 seconds
 2019-07-12 18:34:42.839811: Time to put into dataframe: 0.09 seconds
@@ -2426,7 +2426,7 @@
 2019-07-12 18:34:44.407830: Iteration 9: 0.15
 2019-07-12 18:34:44.578548: Iteration 10: 0.17
 2019-07-12 18:34:44.579513: 
-2019-07-12 18:34:44.579536: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:34:44.579536: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:34:44.580512: Actual rows fetched: 10
 2019-07-12 18:34:44.580805: Time to execute select: 0.14 seconds
 2019-07-12 18:34:44.581294: Time to put into dataframe: 0.02 seconds
@@ -2443,7 +2443,7 @@
 2019-07-12 18:34:46.375722: Iteration 9: 0.17
 2019-07-12 18:34:46.574841: Iteration 10: 0.20
 2019-07-12 18:34:46.575847: 
-2019-07-12 18:34:46.575871: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:34:46.575871: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:34:46.577017: Actual rows fetched: 100
 2019-07-12 18:34:46.577574: Time to execute select: 0.17 seconds
 2019-07-12 18:34:46.578138: Time to put into dataframe: 0.01 seconds
@@ -2460,7 +2460,7 @@
 2019-07-12 18:34:48.456762: Iteration 9: 0.14
 2019-07-12 18:34:48.614627: Iteration 10: 0.16
 2019-07-12 18:34:48.615173: 
-2019-07-12 18:34:48.615182: Results for 1000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:34:48.615182: Results for 1000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:34:48.615955: Actual rows fetched: 1000
 2019-07-12 18:34:48.616315: Time to execute select: 0.17 seconds
 2019-07-12 18:34:48.616699: Time to put into dataframe: 0.01 seconds
@@ -2477,7 +2477,7 @@
 2019-07-12 18:34:53.650478: Iteration 9: 0.46
 2019-07-12 18:34:54.133608: Iteration 10: 0.48
 2019-07-12 18:34:54.134207: 
-2019-07-12 18:34:54.134217: Results for 10000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:34:54.134217: Results for 10000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:34:54.134953: Actual rows fetched: 10000
 2019-07-12 18:34:54.135289: Time to execute select: 0.45 seconds
 2019-07-12 18:34:54.135679: Time to put into dataframe: 0.05 seconds
@@ -2497,7 +2497,7 @@
 2019-07-12 18:35:42.752488: Iteration 10: 4.58
 2019-07-12 18:35:42.752638: Thread 140286787585792 encountered an exception:
 2019-07-12 18:35:42.753101: 
-2019-07-12 18:35:42.753109: Results for 100000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:35:42.753109: Results for 100000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:35:42.754178: Actual rows fetched: 100000
 2019-07-12 18:35:42.753281: Code: 241.
 2019-07-12 18:35:42.753316: DB::Exception: Memory limit (for query) exceeded: would use 9.31 GiB (attempt to allocate chunk of 1024 bytes), maximum: 9.31 GiB. Stack trace:
@@ -2682,7 +2682,7 @@
 2019-07-12 18:43:04.087377: Thread 140286787585792 starting background query: select protocolname,ipv4_src_addr,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by protocolname,ipv4_src_addr order by connections desc limit 50
 2019-07-12 18:43:09.919548: Iteration 10: 45.87
 2019-07-12 18:43:09.920073: 
-2019-07-12 18:43:09.920085: Results for 1000000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:43:09.920085: Results for 1000000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:43:09.920645: Actual rows fetched: 1000000
 2019-07-12 18:43:09.920868: Time to execute select: 34.00 seconds
 2019-07-12 18:43:09.921201: Time to put into dataframe: 6.65 seconds
@@ -2701,7 +2701,7 @@
 2019-07-12 18:43:13.545234: Iteration 9: 0.23
 2019-07-12 18:43:13.722966: Iteration 10: 0.18
 2019-07-12 18:43:13.723882: 
-2019-07-12 18:43:13.723899: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:43:13.723899: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:43:13.724853: Actual rows fetched: 1
 2019-07-12 18:43:13.725348: Time to execute select: 0.26 seconds
 2019-07-12 18:43:13.725839: Time to put into dataframe: 0.08 seconds
@@ -2718,7 +2718,7 @@
 2019-07-12 18:43:15.946970: Iteration 9: 0.31
 2019-07-12 18:43:16.168298: Iteration 10: 0.22
 2019-07-12 18:43:16.169116: 
-2019-07-12 18:43:16.169133: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:43:16.169133: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:43:16.170221: Actual rows fetched: 10
 2019-07-12 18:43:16.170617: Time to execute select: 0.20 seconds
 2019-07-12 18:43:16.171123: Time to put into dataframe: 0.02 seconds
@@ -2735,7 +2735,7 @@
 2019-07-12 18:43:18.248468: Iteration 9: 0.18
 2019-07-12 18:43:18.395123: Iteration 10: 0.15
 2019-07-12 18:43:18.395738: 
-2019-07-12 18:43:18.395754: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:43:18.395754: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:43:18.396624: Actual rows fetched: 100
 2019-07-12 18:43:18.397088: Time to execute select: 0.19 seconds
 2019-07-12 18:43:18.398142: Time to put into dataframe: 0.01 seconds
@@ -2752,7 +2752,7 @@
 2019-07-12 18:43:20.252305: Iteration 9: 0.18
 2019-07-12 18:43:20.447818: Iteration 10: 0.19
 2019-07-12 18:43:20.448297: 
-2019-07-12 18:43:20.448306: Results for 1000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:43:20.448306: Results for 1000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:43:20.449078: Actual rows fetched: 1000
 2019-07-12 18:43:20.449465: Time to execute select: 0.17 seconds
 2019-07-12 18:43:20.449857: Time to put into dataframe: 0.01 seconds
@@ -2769,7 +2769,7 @@
 2019-07-12 18:43:25.979121: Iteration 9: 0.63
 2019-07-12 18:43:26.560946: Iteration 10: 0.58
 2019-07-12 18:43:26.561203: 
-2019-07-12 18:43:26.561214: Results for 10000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:43:26.561214: Results for 10000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:43:26.561907: Actual rows fetched: 10000
 2019-07-12 18:43:26.562056: Time to execute select: 0.50 seconds
 2019-07-12 18:43:26.562199: Time to put into dataframe: 0.05 seconds
@@ -2816,7 +2816,7 @@
 2019-07-12 18:44:15.304058: Iteration 9: 4.63
 2019-07-12 18:44:19.897056: Iteration 10: 4.59
 2019-07-12 18:44:19.897523: 
-2019-07-12 18:44:19.897532: Results for 100000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:44:19.897532: Results for 100000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:44:19.897974: Actual rows fetched: 100000
 2019-07-12 18:44:19.898198: Time to execute select: 4.16 seconds
 2019-07-12 18:44:19.898403: Time to put into dataframe: 0.69 seconds
@@ -3066,7 +3066,7 @@
 2019-07-12 18:53:35.549091: Thread 140286829594368 starting background query: select out_src_mac,count(*) as connections,sum(in_pkts),avg(in_pkts),quantiles(.25,.5,.75)(in_pkts),median(in_pkts) from netflow.netflow_raw group by out_src_mac order by connections desc limit 50
 2019-07-12 18:54:10.891405: Iteration 10: 47.38
 2019-07-12 18:54:10.892029: 
-2019-07-12 18:54:10.892053: Results for 1000000 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:54:10.892053: Results for 1000000 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:54:10.892276: Actual rows fetched: 1000000
 2019-07-12 18:54:10.892404: Time to execute select: 46.07 seconds
 2019-07-12 18:54:10.892530: Time to put into dataframe: 7.66 seconds
@@ -3086,7 +3086,7 @@
 2019-07-12 18:54:13.461559: Iteration 9: 0.06
 2019-07-12 18:54:13.534043: Iteration 10: 0.07
 2019-07-12 18:54:13.535087: 
-2019-07-12 18:54:13.535108: Results for 1 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:54:13.535108: Results for 1 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:54:13.536130: Actual rows fetched: 1
 2019-07-12 18:54:13.536639: Time to execute select: 0.15 seconds
 2019-07-12 18:54:13.537177: Time to put into dataframe: 0.09 seconds
@@ -3103,7 +3103,7 @@
 2019-07-12 18:54:14.653325: Iteration 9: 0.09
 2019-07-12 18:54:14.736142: Iteration 10: 0.08
 2019-07-12 18:54:14.736921: 
-2019-07-12 18:54:14.736935: Results for 10 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:54:14.736935: Results for 10 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:54:14.737628: Actual rows fetched: 10
 2019-07-12 18:54:14.738037: Time to execute select: 0.10 seconds
 2019-07-12 18:54:14.738428: Time to put into dataframe: 0.01 seconds
@@ -3120,7 +3120,7 @@
 2019-07-12 18:54:15.899236: Iteration 9: 0.12
 2019-07-12 18:54:15.990880: Iteration 10: 0.09
 2019-07-12 18:54:15.991565: 
-2019-07-12 18:54:15.991579: Results for 100 records averaged over 11 repetitions with schema type NEW:
+2019-07-12 18:54:15.991579: Results for 100 records averaged over 11 repetitions with schema type RAW:
 2019-07-12 18:54:15.992371: Actual rows fetched: 12
 2019-07-12 18:54:15.992687: Time to execute select: 0.11 seconds
 2019-07-12 18:54:15.993039: Time to put into dataframe: 0.01 seconds
